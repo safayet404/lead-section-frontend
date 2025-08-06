@@ -6,7 +6,7 @@ import AppSidebar from '@/components/AppSidebar.vue'
 <template>
   <SidebarProvider>
     <AppSidebar />
-    <main>
+    <main class="bg-amber-400">
       <SidebarTrigger />
       <slot />
     </main>
