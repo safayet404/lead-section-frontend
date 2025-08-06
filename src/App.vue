@@ -1,85 +1,40 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import AppSidebar from '@/components/AppSidebar.vue'
+// Import your content components
+import { ref } from 'vue'
+import Dashboard from './components/Dashboard.vue'
+import InboxView from './components/InboxView.vue'
+import CalenderView from './components/CalenderView.vue'
+
+// State to track which content to show
+const activeView = ref('dashboard')
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+  <SidebarProvider>
+    <AppSidebar @navigate="activeView = $event" />
+    <main class="flex-1 p-6">
+      <SidebarTrigger />
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+      <!-- Your content goes here -->
+      <div class="mt-4">
+        <!-- Conditional rendering based on sidebar selection -->
+        <Dashboard v-if="activeView === 'dashboard'" />
+        <InboxView v-else-if="activeView === 'inbox'" />
+        <CalenderView v-else-if="activeView === 'calendar'" />
+        <!-- Add more views as needed -->
 
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-  </header>
-
-  <RouterView />
+        <!-- Or use router-view if using Vue Router -->
+        <!-- <RouterView /> -->
+      </div>
+    </main>
+  </SidebarProvider>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
+main {
+  min-height: 100vh;
+  background: var(--background);
 }
 </style>
