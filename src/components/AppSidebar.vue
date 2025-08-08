@@ -26,16 +26,26 @@
         <ul>
           <li v-for="item in menuItems" :key="item.label">
             <div>
+              <!-- If no children, make it a router-link -->
+              <router-link
+                v-if="!item.children"
+                :to="item.to"
+                class="flex items-center gap-3 px-4 py-2 hover:bg-gray-700"
+              >
+                <component :is="item.icon" class="w-5 h-5" />
+                <span v-if="isOpen" class="flex-1">{{ item.label }}</span>
+              </router-link>
+
+              <!-- If children exist, make parent clickable to toggle -->
               <button
+                v-else
                 class="flex items-center gap-3 px-4 py-2 hover:bg-gray-700"
                 @click="toggleGroup(item.label)"
               >
-                <span>
-                  <component :is="item.icon" class="w-5 h-5" />
-                </span>
+                <component :is="item.icon" class="w-5 h-5" />
                 <span v-if="isOpen" class="flex-1">{{ item.label }}</span>
                 <svg
-                  v-if="item.children && isOpen"
+                  v-if="isOpen"
                   class="w-4 h-4 transform transition-transform duration-300"
                   :class="{ 'rotate-90': openGroups[item.label] }"
                   fill="none"
@@ -51,15 +61,16 @@
                 </svg>
               </button>
 
+              <!-- Submenu -->
               <transition name="fade">
                 <ul v-if="item.children && openGroups[item.label] && isOpen" class="ml-8 space-y-1">
                   <li v-for="sub in item.children" :key="sub.label">
-                    <a
-                      href="#"
+                    <router-link
+                      :to="sub.to"
                       class="block px-4 py-1 text-sm text-gray-300 hover:text-white hover:underline"
                     >
                       {{ sub.label }}
-                    </a>
+                    </router-link>
                   </li>
                 </ul>
               </transition>
@@ -73,6 +84,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { Home, Settings, Users } from 'lucide-vue-next'
 
 const isOpen = ref(true)
 const toggleSidebar = () => {
@@ -80,22 +92,30 @@ const toggleSidebar = () => {
 }
 
 const openGroups = reactive({})
-
 const toggleGroup = (label) => {
   openGroups[label] = !openGroups[label]
 }
 
-import { Home, Settings, Users } from 'lucide-vue-next'
-
+// Menu config with routes
 const menuItems = [
   {
     label: 'Dashboard',
     icon: Home,
+    to: '/', // route path
+  },
+  {
+    label: 'Leads',
+    icon: Users,
+    to: '/leads', // route path
   },
   {
     label: 'Management',
     icon: Settings,
-    children: [{ label: 'Users' }, { label: 'Roles' }, { label: 'Permissions' }],
+    children: [
+      { label: 'Users', to: '/users' },
+      { label: 'Roles', to: '/roles' },
+      { label: 'Permissions', to: '/permissions' },
+    ],
   },
 ]
 </script>
