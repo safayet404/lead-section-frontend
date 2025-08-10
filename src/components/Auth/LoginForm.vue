@@ -16,12 +16,7 @@ async function submit() {
   errors.password = ''
 
   try {
-    console.log('Making login request...')
     const response = await api.post('/login', form)
-
-    console.log('Login response:', response)
-    console.log('Response data:', response.data)
-
     if (response.data.status === 'success') {
       window.location.href = '/'
     } else {
