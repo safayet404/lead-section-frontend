@@ -14,6 +14,7 @@ const searchField = 'name'
 const Header = [
   { text: 'ID', value: 'id' },
   { text: 'Role Name', value: 'name' },
+  { text: 'Total User in this role', value: 'users_count' },
   { text: 'Actions', value: 'number' },
 ]
 
@@ -22,6 +23,7 @@ onMounted(async () => {
     const response = await api.get('/role-list')
 
     roles.value = response?.data?.list || []
+    console.log(response.data.list)
   } catch (err) {
     error.value = err.message || 'Failed to load roles'
   } finally {

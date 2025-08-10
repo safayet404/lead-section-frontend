@@ -104,9 +104,9 @@ const menuItems = [
     to: '/', // route path
   },
   {
-    label: 'Leads',
+    label: 'Roles',
     icon: Users,
-    to: '/leads', // route path
+    to: '/roles', // route path
   },
   {
     label: 'Management',
