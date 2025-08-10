@@ -1,6 +1,6 @@
 <script setup>
+import api from '@/lib/api'
 import { reactive, ref } from 'vue'
-import api from '@/lib/api' // your axios instance
 
 const form = reactive({
   email: '',
@@ -16,15 +16,21 @@ async function submit() {
   errors.password = ''
 
   try {
+    console.log('Making login request...')
     const response = await api.post('/login', form)
-    console.log('Login success:', response.data)
-    // You can redirect here if needed:
-    // window.location.href = '/dashboard';
+
+    console.log('Login response:', response)
+    console.log('Response data:', response.data)
+
+    if (response.data.status === 'success') {
+      window.location.href = '/'
+    } else {
+      console.error('Login failed:', response.data.message)
+    }
   } catch (error) {
+    console.error('Login error:', error)
     if (error.response?.data?.errors) {
       Object.assign(errors, error.response.data.errors)
-    } else {
-      console.error('Login error:', error)
     }
   } finally {
     form.password = ''
@@ -46,7 +52,7 @@ async function submit() {
             id="email"
             v-model="form.email"
             placeholder="User Email"
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#675DD8] focus:border-[#675DD8]"
             type="email"
           />
           <div v-if="errors.email" class="text-red-500 text-sm mt-1">
@@ -60,7 +66,7 @@ async function submit() {
             id="password"
             v-model="form.password"
             placeholder="User Password"
-            class="w-full px-4 py-2 mt-5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            class="w-full px-4 py-2 mt-5 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#675DD8] focus:border-[#675DD8]"
             type="password"
           />
           <div v-if="errors.password" class="text-red-500 text-sm mt-1">
