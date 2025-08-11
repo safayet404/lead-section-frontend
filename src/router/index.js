@@ -4,6 +4,8 @@ import Dashboard from '@/components/Dashboard.vue'
 import Roles from '@/components/Roles.vue'
 import LoginForm from '@/components/Auth/LoginForm.vue'
 import axios from 'axios'
+import Profile from '@/components/Auth/Profile.vue'
+import api from '@/lib/api'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -22,6 +24,11 @@ const router = createRouter({
           name: 'Roles',
           component: Roles,
         },
+        {
+          path: 'profile',
+          name: 'Profile',
+          component: Profile,
+        },
       ],
     },
     {
@@ -29,19 +36,38 @@ const router = createRouter({
       component: LoginForm,
       beforeEnter: async (to, from, next) => {
         try {
-          await axios.get('/profile', { withCredentials: true })
+          const res = await api.get('/profile')
 
-          next({ path: '/' })
+          if (res.status === 200) {
+            return next({ path: '/' })
+          }
         } catch (error) {
-          if (error.response && error.response.status === 401) {
-            next()
-          } else {
-            next()
+          if (error.response?.status === 401) {
+            return next()
           }
         }
+        next()
       },
     },
   ],
 })
+router.beforeEach(async (to, from, next) => {
+  if (to.path === '/login') {
+    return next()
+  }
 
+  try {
+    const res = await api.get('/profile')
+
+    if (res.status === 200) {
+      return next()
+    }
+  } catch (error) {
+    if (error.response?.status === 401) {
+      return next('/login')
+    }
+  }
+
+  next('/login')
+})
 export default router

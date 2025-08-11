@@ -117,6 +117,11 @@ const menuItems = [
       { label: 'Permissions', to: '/permissions' },
     ],
   },
+  {
+    label: 'Profile',
+    icon: Users,
+    to: '/profile',
+  },
 ]
 </script>
 
