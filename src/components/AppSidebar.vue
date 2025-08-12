@@ -84,7 +84,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { Home, Settings, Users } from 'lucide-vue-next'
+import { Home, Settings, Users, Leaf } from 'lucide-vue-next'
 
 const isOpen = ref(true)
 const toggleSidebar = () => {
@@ -121,6 +121,11 @@ const menuItems = [
     label: 'Profile',
     icon: Users,
     to: '/profile',
+  },
+  {
+    label: 'Lead',
+    icon: Leaf,
+    to: '/lead',
   },
 ]
 </script>

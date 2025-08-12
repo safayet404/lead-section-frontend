@@ -6,6 +6,7 @@ import LoginForm from '@/components/Auth/LoginForm.vue'
 import axios from 'axios'
 import Profile from '@/components/Auth/Profile.vue'
 import api from '@/lib/api'
+import LeadList from '@/components/Lead/LeadList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -28,6 +29,11 @@ const router = createRouter({
           path: 'profile',
           name: 'Profile',
           component: Profile,
+        },
+        {
+          path: 'lead',
+          name: 'Lead',
+          component: LeadList,
         },
       ],
     },
