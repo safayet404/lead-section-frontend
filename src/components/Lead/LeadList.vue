@@ -14,7 +14,7 @@ const Header = [
 
   { text: 'Current Status', value: 'status.name' },
   { text: 'Lead Country', value: 'interested_country' },
-  { text: 'Contact Information', value: 'name' },
+  { text: 'Contact Information', value: 'contact_info' },
   { text: 'Managers Note', value: 'notes' },
   { text: 'Assignments Details', value: 'assignment_details' }, // ✅ custom slot
   { text: 'Assigned Status', value: 'assigned_status' },
@@ -57,6 +57,15 @@ onMounted(async () => {
       :search-field="searchField"
       :search-value="searchValue"
     >
+      <template #item-contact_info="{ name, phone, email }">
+        <div>
+          <strong>{{ name }}</strong
+          ><br />
+          📞 {{ phone }}<br />
+          ✉️ {{ email }}
+        </div>
+      </template>
+
       <template #item-assignment_details="{ user }">
         <div v-if="user" class="py-5">
           <strong>{{ user?.name }}</strong>
