@@ -13,8 +13,8 @@ const users = ref([])
 const statuses = ref([])
 const branches = ref([])
 const leadHealthTypes = ref(['Good', 'Average', 'Poor']) // Example static
-const leadTypes = ref(['Hot', 'Warm', 'Cold']) // Example static
-const events = ref(['Event 1', 'Event 2']) // Example static
+const leadTypes = ref([])
+const events = ref([])
 
 // Selected filters
 const selectedUser = ref('')
@@ -54,11 +54,13 @@ const pendingCalls = computed(
 // Fetch initial data
 onMounted(async () => {
   try {
-    const [leadRes, userRes, statusRes, branchRes] = await Promise.all([
+    const [leadRes, userRes, statusRes, branchRes, eventRes, typeRes] = await Promise.all([
       api.get('/lead-list'),
       api.get('/user-list'),
       api.get('/status-list'),
       api.get('/branch-list'),
+      api.get('/event-list'),
+      api.get('/type-list'),
     ])
 
     leads.value = leadRes?.data?.list || []
@@ -69,6 +71,9 @@ onMounted(async () => {
     statuses.value = statusRes?.data?.list || []
 
     branches.value = branchRes?.data?.list || []
+
+    events.value = eventRes?.data?.list || []
+    leadTypes.value = typeRes?.data?.list || []
   } catch (err) {
     error.value = err.message
   } finally {
@@ -84,8 +89,8 @@ const filteredLeads = computed(() => {
       (!selectedLeadHealth.value || l.lead_health_type === selectedLeadHealth.value) &&
       (!selectedAssignedStatus.value || l.assigned_status === selectedAssignedStatus.value) &&
       (!selectedLeadStatus.value || l.status?.id == selectedLeadStatus.value) &&
-      (!selectedLeadType.value || l.type === selectedLeadType.value) &&
-      (!selectedEvent.value || l.event === selectedEvent.value) &&
+      (!selectedLeadType.value || l.type?.id == selectedLeadType.value) &&
+      (!selectedEvent.value || l.event?.id == selectedEvent.value) &&
       (!selectedCountry.value || l.interested_country === selectedCountry.value) &&
       (!selectedBranch.value || l.user?.branch?.id == selectedBranch.value) &&
       (!selectedDate.value || l.assigned_date === selectedDate.value)
@@ -121,12 +126,12 @@ const filteredLeads = computed(() => {
 
       <select v-model="selectedLeadType" class="border p-2 rounded">
         <option value="">Select Lead Type</option>
-        <option v-for="t in leadTypes" :key="t">{{ t }}</option>
+        <option v-for="t in leadTypes" :key="t.id" :value="t.id">{{ t.name }}</option>
       </select>
 
       <select v-model="selectedEvent" class="border p-2 rounded">
         <option value="">Select Event</option>
-        <option v-for="e in events" :key="e">{{ e }}</option>
+        <option v-for="e in events" :key="e.id" :value="e.id">{{ e.name }}</option>
       </select>
 
       <input
