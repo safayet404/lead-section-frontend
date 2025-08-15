@@ -41,7 +41,7 @@ const headers = [
   { text: 'Contact Information', value: 'contact_info' },
   { text: 'Assignment Details', value: 'assignment_details' },
   { text: 'Assigned Status', value: 'assign_type.name' },
-  { text: 'Date', value: 'created' },
+  { text: 'Date', value: 'lead_date' },
   { text: 'Actions', value: 'id' },
 ]
 
@@ -117,7 +117,7 @@ const filteredLeads = computed(() => {
       (!selectedEvent.value || l.event?.id == selectedEvent.value) &&
       (!selectedCountry.value || l.lead_country?.id == selectedCountry.value) &&
       (!selectedBranch.value || l.lead_branch?.id == selectedBranch.value) &&
-      (!selectedDate.value || l.assigned_date === selectedDate.value)
+      (!selectedDate.value || l.lead_date === selectedDate.value)
     )
   })
 })
