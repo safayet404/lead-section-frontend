@@ -12,9 +12,11 @@ const error = ref(null)
 const users = ref([])
 const statuses = ref([])
 const branches = ref([])
-const leadHealthTypes = ref(['Good', 'Average', 'Poor']) // Example static
+const leadHealthTypes = ref(['Hot', 'Warm', 'Cold'])
 const leadTypes = ref([])
 const events = ref([])
+const assignType = ref([])
+const leadCountry = ref([])
 
 // Selected filters
 const selectedUser = ref('')
@@ -38,7 +40,7 @@ const headers = [
   { text: 'Current Status', value: 'status.name' },
   { text: 'Contact Information', value: 'contact_info' },
   { text: 'Assignment Details', value: 'assignment_details' },
-  { text: 'Assigned Status', value: 'assigned_status' },
+  { text: 'Assigned Status', value: 'assign_type.name' },
   { text: 'Date', value: 'created' },
   { text: 'Actions', value: 'id' },
 ]
@@ -54,14 +56,17 @@ const pendingCalls = computed(
 // Fetch initial data
 onMounted(async () => {
   try {
-    const [leadRes, userRes, statusRes, branchRes, eventRes, typeRes] = await Promise.all([
-      api.get('/lead-list'),
-      api.get('/user-list'),
-      api.get('/status-list'),
-      api.get('/branch-list'),
-      api.get('/event-list'),
-      api.get('/type-list'),
-    ])
+    const [leadRes, userRes, statusRes, branchRes, eventRes, typeRes, assignRes, countryRes] =
+      await Promise.all([
+        api.get('/lead-list'),
+        api.get('/user-list'),
+        api.get('/status-list'),
+        api.get('/branch-list'),
+        api.get('/event-list'),
+        api.get('/type-list'),
+        api.get('/assign-list'),
+        api.get('/country-list'),
+      ])
 
     leads.value = leadRes?.data?.list || []
     users.value = userRes?.data?.list || []
@@ -74,6 +79,8 @@ onMounted(async () => {
 
     events.value = eventRes?.data?.list || []
     leadTypes.value = typeRes?.data?.list || []
+    assignType.value = assignRes?.data?.list || []
+    leadCountry.value = countryRes?.data?.list || []
   } catch (err) {
     error.value = err.message
   } finally {
@@ -87,12 +94,12 @@ const filteredLeads = computed(() => {
     return (
       (!selectedUser.value || l.user?.id == selectedUser.value) &&
       (!selectedLeadHealth.value || l.lead_health_type === selectedLeadHealth.value) &&
-      (!selectedAssignedStatus.value || l.assigned_status === selectedAssignedStatus.value) &&
+      (!selectedAssignedStatus.value || l.assign_type?.id == selectedAssignedStatus.value) &&
       (!selectedLeadStatus.value || l.status?.id == selectedLeadStatus.value) &&
       (!selectedLeadType.value || l.type?.id == selectedLeadType.value) &&
       (!selectedEvent.value || l.event?.id == selectedEvent.value) &&
-      (!selectedCountry.value || l.interested_country === selectedCountry.value) &&
-      (!selectedBranch.value || l.user?.branch?.id == selectedBranch.value) &&
+      (!selectedCountry.value || l.lead_country?.id == selectedCountry.value) &&
+      (!selectedBranch.value || l.lead_branch?.id == selectedBranch.value) &&
       (!selectedDate.value || l.assigned_date === selectedDate.value)
     )
   })
@@ -115,8 +122,10 @@ const filteredLeads = computed(() => {
 
       <select v-model="selectedAssignedStatus" class="border p-2 rounded">
         <option value="">Select Assigned Status</option>
-        <option value="Assigned">Assigned</option>
-        <option value="Unassigned">Unassigned</option>
+        <!-- <option value="Assigned">Assigned</option>
+        <option value="Unassigned">Unassigned</option> -->
+
+        <option v-for="a in assignType" :key="a" :value="a.id">{{ a.name }}</option>
       </select>
 
       <select v-model="selectedLeadStatus" class="border p-2 rounded">
@@ -134,11 +143,10 @@ const filteredLeads = computed(() => {
         <option v-for="e in events" :key="e.id" :value="e.id">{{ e.name }}</option>
       </select>
 
-      <input
-        v-model="selectedCountry"
-        placeholder="Select Application Country"
-        class="border p-2 rounded"
-      />
+      <select v-model="selectedCountry" class="border p-2 rounded">
+        <option value="">Select Country</option>
+        <option v-for="c in leadCountry" :key="c.id" :value="c.id">{{ c.name }}</option>
+      </select>
 
       <select v-model="selectedBranch" class="border p-2 rounded">
         <option value="">Select Branch</option>
@@ -192,15 +200,6 @@ const filteredLeads = computed(() => {
             ( {{ user?.email }} ) <br />
             <br />
             Branch Name: {{ user?.branch?.name }}
-          </div>
-        </template>
-
-        <template #item-assigned_status="{ user }">
-          <div v-if="user" class="py-5">
-            <strong>Assigned</strong>
-          </div>
-          <div v-else class="py-5">
-            <strong>Unassigned</strong>
           </div>
         </template>
 
