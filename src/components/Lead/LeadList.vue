@@ -36,8 +36,8 @@ const searchField = 'name'
 // Table headers
 const headers = [
   { text: 'ID', value: 'id' },
-  { text: 'Lead Country', value: 'interested_country' },
-  { text: 'Current Status', value: 'status.name' },
+  { text: 'Lead Country', value: 'lead_country.name' },
+  { text: 'Current Status', value: 'status_details' },
   { text: 'Contact Information', value: 'contact_info' },
   { text: 'Assignment Details', value: 'assignment_details' },
   { text: 'Assigned Status', value: 'assign_type.name' },
@@ -52,6 +52,23 @@ const activeLeads = computed(
 const pendingCalls = computed(
   () => leads.value.filter((l) => l.status?.name?.toLowerCase().includes('pending')).length,
 )
+const lightenColor = (hex, percent) => {
+  if (!hex) return 'transparent'
+  const hexWithoutHash = hex.startsWith('#') ? hex.slice(1) : hex
+  let r = parseInt(hexWithoutHash.substring(0, 2), 16)
+  let g = parseInt(hexWithoutHash.substring(2, 4), 16)
+  let b = parseInt(hexWithoutHash.substring(4, 6), 16)
+  r = Math.min(255, r + (255 * percent) / 100)
+    .toString(16)
+    .padStart(2, '0')
+  g = Math.min(255, g + (255 * percent) / 100)
+    .toString(16)
+    .padStart(2, '0')
+  b = Math.min(255, b + (255 * percent) / 100)
+    .toString(16)
+    .padStart(2, '0')
+  return `#${r}${g}${b}`
+}
 
 // Fetch initial data
 onMounted(async () => {
@@ -93,7 +110,7 @@ const filteredLeads = computed(() => {
   return leads.value.filter((l) => {
     return (
       (!selectedUser.value || l.user?.id == selectedUser.value) &&
-      (!selectedLeadHealth.value || l.lead_health_type === selectedLeadHealth.value) &&
+      (!selectedLeadHealth.value || l.status?.health_type === selectedLeadHealth.value) &&
       (!selectedAssignedStatus.value || l.assign_type?.id == selectedAssignedStatus.value) &&
       (!selectedLeadStatus.value || l.status?.id == selectedLeadStatus.value) &&
       (!selectedLeadType.value || l.type?.id == selectedLeadType.value) &&
@@ -165,7 +182,7 @@ const filteredLeads = computed(() => {
       </div>
       <div class="bg-green-500 text-white p-4 rounded flex-1 text-center">
         <div class="text-lg font-bold">Active Leads</div>
-        <div class="text-2xl">{{ activeLeads }}</div>
+        <div class="text-2xl">{{ totalLeads - pendingCalls }}</div>
       </div>
       <div class="bg-yellow-500 text-white p-4 rounded flex-1 text-center">
         <div class="text-lg font-bold">Pending Calls</div>
@@ -185,12 +202,20 @@ const filteredLeads = computed(() => {
         buttons-pagination
         alternating
       >
-        <template #item-contact_info="{ name, phone, email }">
+        <template #item-status_details="{ status }">
+          <div>
+            <strong :style="{ color: status?.color_code }">{{ status?.name }}</strong>
+            <br />
+          </div>
+        </template>
+        <template #item-contact_info="{ name, phone, email, lead_country, ielts_or_english_test }">
           <div>
             <strong>{{ name }}</strong
             ><br />
             📞 {{ phone }}<br />
-            ✉️ {{ email }}
+            ✉️ {{ email }} <br />
+            🌍 {{ lead_country?.name }} <br />
+            📖 {{ ielts_or_english_test }}
           </div>
         </template>
 
@@ -201,6 +226,8 @@ const filteredLeads = computed(() => {
             <br />
             Branch Name: {{ user?.branch?.name }}
           </div>
+
+          <div v-else>Not Assigned Yet</div>
         </template>
 
         <template #item-created="{ created_at }">

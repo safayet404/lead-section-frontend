@@ -3,12 +3,12 @@
     <!-- Sidebar -->
     <aside
       :class="[
-        'h-screen bg-gray-800 text-white transition-all duration-300',
+        'min-h-screen bg-[#2F3349] text-white transition-all duration-300',
         isOpen ? 'w-64' : 'w-16',
       ]"
     >
       <div class="flex items-center justify-between p-4 border-b border-gray-700">
-        <h1 v-if="isOpen" class="text-lg font-bold">SGE</h1>
+        <h1 v-if="isOpen" class="text-2xl font-bold">Shabuj Global</h1>
         <button @click="toggleSidebar" class="text-gray-300 hover:text-white">
           <svg
             xmlns="http://www.w3.org/2000/svg"
