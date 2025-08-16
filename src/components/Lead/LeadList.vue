@@ -75,7 +75,7 @@ const updateLeadStatus = async () => {
 }
 // Search
 const searchValue = ref('')
-const searchField = 'name'
+const searchField = ['id', 'name', 'email']
 
 // Table headers
 const headers = [
@@ -218,6 +218,12 @@ const filteredLeads = computed(() => {
     <div v-if="loading" class="mt-4">Loading...</div>
     <div v-else-if="error" class="text-red-500 mt-4">{{ error }}</div>
     <div v-else class="mt-4">
+      <input
+        v-model="searchValue"
+        type="text"
+        placeholder="Search Leads..."
+        class="border p-1 rounded mb-3"
+      />
       <EasyDataTable
         :headers="headers"
         :items="filteredLeads"
