@@ -79,9 +79,9 @@ const handleEntitySubmission = async () => {
         id: entityEditing.value.id,
         name: entityName.value,
       }
-      response = await api.put('/country-update', payload)
+      response = await api.put('/branch-update', payload)
     } else {
-      response = await api.post('/create-country', { name: entityName.value })
+      response = await api.post('/create-branch', { name: entityName.value })
     }
 
     if (response.data.status === 'success') {
@@ -164,7 +164,7 @@ const handleEntitySubmission = async () => {
             <input
               v-model="entityName"
               class="mt-5 border w-full rounded p-2 border-gray-500"
-              placeholder="Enter Event Name"
+              placeholder="Enter the value"
             />
 
             <div class="flex justify-end gap-2 mt-5">
