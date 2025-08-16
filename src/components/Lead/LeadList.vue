@@ -29,6 +29,50 @@ const selectedCountry = ref('')
 const selectedBranch = ref('')
 const selectedDate = ref('')
 
+// Status Modal
+
+const showStatusModal = ref(false)
+const selectedLeadForStatus = ref(null)
+const newStatus = ref(null)
+
+const openStatusModal = (lead) => {
+  selectedLeadForStatus.value = lead
+  newStatus.value = lead.status?.id
+  showStatusModal.value = true
+}
+
+const closeStatusModal = () => {
+  showStatusModal.value = false
+  selectedLeadForStatus.value = null
+  newStatus.value = null
+}
+
+const updateLeadStatus = async () => {
+  if (!selectedLeadForStatus.value || !newStatus.value) return
+
+  try {
+    const payload = {
+      id: selectedLeadForStatus.value.id,
+      status_id: newStatus.value,
+    }
+    const response = await api.post('/lead-update', payload)
+
+    if (response?.data?.status === 'success') {
+      const leadIndex = leads.value.findIndex((l) => l.id === selectedLeadForStatus.value.id)
+      if (leadIndex !== -1) {
+        const updatedStatus = statuses.value.find((s) => s.id === newStatus.value)
+        if (updatedStatus) {
+          leads.value[leadIndex].status = updatedStatus
+        }
+      }
+      closeStatusModal()
+    } else {
+      console.error('API Error:', response?.data?.message)
+    }
+  } catch (error) {
+    console.error('Failed to update lead status:', err)
+  }
+}
 // Search
 const searchValue = ref('')
 const searchField = 'name'
@@ -46,29 +90,9 @@ const headers = [
 ]
 
 const totalLeads = computed(() => leads.value.length)
-const activeLeads = computed(
-  () => leads.value.filter((l) => l.status?.name?.toLowerCase().includes('active')).length,
-)
 const pendingCalls = computed(
   () => leads.value.filter((l) => l.status?.name?.toLowerCase().includes('pending')).length,
 )
-const lightenColor = (hex, percent) => {
-  if (!hex) return 'transparent'
-  const hexWithoutHash = hex.startsWith('#') ? hex.slice(1) : hex
-  let r = parseInt(hexWithoutHash.substring(0, 2), 16)
-  let g = parseInt(hexWithoutHash.substring(2, 4), 16)
-  let b = parseInt(hexWithoutHash.substring(4, 6), 16)
-  r = Math.min(255, r + (255 * percent) / 100)
-    .toString(16)
-    .padStart(2, '0')
-  g = Math.min(255, g + (255 * percent) / 100)
-    .toString(16)
-    .padStart(2, '0')
-  b = Math.min(255, b + (255 * percent) / 100)
-    .toString(16)
-    .padStart(2, '0')
-  return `#${r}${g}${b}`
-}
 
 // Fetch initial data
 onMounted(async () => {
@@ -202,8 +226,11 @@ const filteredLeads = computed(() => {
         buttons-pagination
         alternating
       >
-        <template #item-status_details="{ status }">
-          <div>
+        <template #item-status_details="{ status, id }">
+          <div
+            class="cursor-pointer"
+            @click="openStatusModal(filteredLeads.find((l) => l.id === id))"
+          >
             <strong :style="{ color: status?.color_code }">{{ status?.name }}</strong>
             <br />
           </div>
@@ -241,5 +268,78 @@ const filteredLeads = computed(() => {
         </template>
       </EasyDataTable>
     </div>
+
+    <Transition name="modal-fade">
+      <div v-if="showStatusModal" class="modal-overlay">
+        <div class="modal-container">
+          <h3 class="text-xl font-bold mb-4">Change Lead Status</h3>
+          <p class="mb-4">
+            Changing status for: <strong>{{ selectedLeadForStatus?.name }}</strong>
+          </p>
+
+          <div class="mb-4">
+            <label for="newStatus" class="block text-sm font-medium py-2 text-gray-700"
+              >Select New Status</label
+            >
+            <select
+              id="newStatus"
+              v-model="newStatus"
+              class="mt-1 block w-full border-gray-300 p-2 rounded-md shadow-sm border focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            >
+              <option v-for="s in statuses" :key="s.id" :value="s.id">{{ s.name }}</option>
+            </select>
+          </div>
+
+          <div class="flex justify-end gap-2">
+            <button
+              @click="closeStatusModal"
+              class="bg-red-600 py-2 px-4 rounded-lg text-white cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              @click="updateLeadStatus"
+              class="bg-[#AD46FF] py-2 px-4 rounded-lg text-white cursor-pointer"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
+
+<style>
+.modal-fade-enter-active .modal-container,
+.modal-fade-leave-active .modal-container {
+  transition: all 0.3s ease-in-out;
+}
+
+.modal-fade-enter-from .modal-container,
+.modal-fade-leave-to .modal-container {
+  transform: translateY(-20px);
+  opacity: 0;
+}
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background-color: white;
+  padding: 24px;
+  border-radius: 8px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+</style>
