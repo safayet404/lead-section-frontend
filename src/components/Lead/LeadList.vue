@@ -231,7 +231,14 @@ const filteredLeads = computed(() => {
             class="cursor-pointer"
             @click="openStatusModal(filteredLeads.find((l) => l.id === id))"
           >
-            <strong :style="{ color: status?.color_code }">{{ status?.name }}</strong>
+            <strong
+              class="rounded-2xl p-2"
+              :style="{
+                color: status?.color_code,
+                border: `1px solid ${status?.color_code}`,
+              }"
+              >{{ status?.name }}</strong
+            >
             <br />
           </div>
         </template>

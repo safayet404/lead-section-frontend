@@ -7,6 +7,10 @@ import axios from 'axios'
 import Profile from '@/components/Auth/Profile.vue'
 import api from '@/lib/api'
 import LeadList from '@/components/Lead/LeadList.vue'
+import AllStatus from '@/components/Settings/AllStatus.vue'
+import BranchList from '@/components/Settings/BranchList.vue'
+import EventList from '@/components/Settings/EventList.vue'
+import CountryList from '@/components/Settings/CountryList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,6 +38,26 @@ const router = createRouter({
           path: 'lead',
           name: 'Lead',
           component: LeadList,
+        },
+        {
+          path: 'status',
+          name: 'All Status',
+          component: AllStatus,
+        },
+        {
+          path: 'branch',
+          name: 'Branch List',
+          component: BranchList,
+        },
+        {
+          path: 'events',
+          name: 'Event List',
+          component: EventList,
+        },
+        {
+          path: 'country',
+          name: 'Country List',
+          component: CountryList,
         },
       ],
     },

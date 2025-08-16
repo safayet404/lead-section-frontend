@@ -84,7 +84,7 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { Home, Settings, Users, Leaf } from 'lucide-vue-next'
+import { Home, Settings, Users, Leaf, Stamp, icons } from 'lucide-vue-next'
 
 const isOpen = ref(true)
 const toggleSidebar = () => {
@@ -109,23 +109,29 @@ const menuItems = [
     to: '/roles', // route path
   },
   {
-    label: 'Management',
-    icon: Settings,
+    label: 'Leads',
+    icon: Leaf,
     children: [
-      { label: 'Users', to: '/users' },
+      { label: 'All Lead', to: '/lead' },
       { label: 'Roles', to: '/roles' },
       { label: 'Permissions', to: '/permissions' },
+    ],
+  },
+
+  {
+    label: 'Settings',
+    icon: Settings,
+    children: [
+      { label: 'All Status', to: '/status' },
+      { label: 'Branch List', to: '/branch' },
+      { label: 'Event List', to: '/events' },
+      { label: 'Country List', to: '/country' },
     ],
   },
   {
     label: 'Profile',
     icon: Users,
     to: '/profile',
-  },
-  {
-    label: 'Lead',
-    icon: Leaf,
-    to: '/lead',
   },
 ]
 </script>
