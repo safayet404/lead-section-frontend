@@ -24,8 +24,6 @@ const fetchData = async () => {
   try {
     const response = await api.get('/status-list')
     data.value = response?.data?.list || []
-
-    console.log('aa', data.value)
   } catch (err) {
     error.value = err.message || 'Failed to load events'
   } finally {

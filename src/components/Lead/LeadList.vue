@@ -80,6 +80,7 @@ const searchField = ['id', 'name', 'email']
 // Table headers
 const headers = [
   { text: 'ID', value: 'id' },
+  { text: 'Aging', value: 'aging' },
   { text: 'Lead Country', value: 'lead_country.name' },
   { text: 'Current Status', value: 'status_details' },
   { text: 'Contact Information', value: 'contact_info' },
@@ -94,7 +95,6 @@ const pendingCalls = computed(
   () => leads.value.filter((l) => l.status?.name?.toLowerCase().includes('pending')).length,
 )
 
-// Fetch initial data
 onMounted(async () => {
   try {
     const [leadRes, userRes, statusRes, branchRes, eventRes, typeRes, assignRes, countryRes] =
@@ -143,6 +143,20 @@ const filteredLeads = computed(() => {
       (!selectedBranch.value || l.lead_branch?.id == selectedBranch.value) &&
       (!selectedDate.value || l.lead_date === selectedDate.value)
     )
+  })
+})
+
+const leadsWithAging = computed(() => {
+  const today = new Date()
+  return filteredLeads.value.map((lead) => {
+    const createdAt = new Date(lead.created_at)
+    const diffTime = Math.abs(today - createdAt)
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    return {
+      ...lead,
+      aging: diffDays,
+    }
   })
 })
 </script>
@@ -226,7 +240,7 @@ const filteredLeads = computed(() => {
       />
       <EasyDataTable
         :headers="headers"
-        :items="filteredLeads"
+        :items="leadsWithAging"
         :search-field="searchField"
         :search-value="searchValue"
         buttons-pagination
