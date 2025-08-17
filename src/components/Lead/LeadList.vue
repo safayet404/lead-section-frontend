@@ -85,9 +85,10 @@ const headers = [
   { text: 'Current Status', value: 'status_details' },
   { text: 'Contact Information', value: 'contact_info' },
   { text: 'Assignment Details', value: 'assignment_details' },
+  { text: 'Manager Note', value: 'note_details' },
   { text: 'Assigned Status', value: 'assign_type.name' },
   { text: 'Date', value: 'lead_date' },
-  { text: 'Actions', value: 'id' },
+  { text: 'Actions', value: 'number' },
 ]
 
 const totalLeads = computed(() => leads.value.length)
@@ -159,6 +160,31 @@ const leadsWithAging = computed(() => {
     }
   })
 })
+
+const noteModal = ref(false)
+const note = ref('')
+const selectedLeadNote = ref(null)
+const selectedUserNote = ref(null)
+
+const openNoteModal = (note) => {
+  selectedLeadNote.value = note.lead_id
+  selectedUserNote.value = note.user_id
+  noteModal.value = true
+
+  alert(note.user_id, note.lead_id)
+}
+
+const closeModal = () => {
+  noteModal.value = false
+}
+
+const addManagerNote = async () => {
+  try {
+    const payload = {
+      user_id,
+    }
+  } catch (error) {}
+}
 </script>
 
 <template>
@@ -177,9 +203,6 @@ const leadsWithAging = computed(() => {
 
       <select v-model="selectedAssignedStatus" class="border p-2 rounded">
         <option value="">Select Assigned Status</option>
-        <!-- <option value="Assigned">Assigned</option>
-        <option value="Unassigned">Unassigned</option> -->
-
         <option v-for="a in assignType" :key="a" :value="a.id">{{ a.name }}</option>
       </select>
 
@@ -284,14 +307,29 @@ const leadsWithAging = computed(() => {
           <div v-else>Not Assigned Yet</div>
         </template>
 
-        <template #item-created="{ created_at }">
-          {{
-            new Date(created_at).toLocaleDateString('en-GB', {
-              year: 'numeric',
-              month: 'short',
-              day: '2-digit',
-            })
-          }}
+        <template #item-note_details="{ note }">
+          <ul v-for="n in note" class="py-1">
+            <li class="list-disc">
+              <span class="font-semibold text-gray-600 text-sm"> {{ n.note }}</span> (
+              <span class="text-[#0D81CF] text-sm"> {{ n.user?.name }}</span> ,
+              <span class="text-[#FFA90C] text-sm">{{
+                new Date(n.created_at).toLocaleDateString('en-GB', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: true,
+                })
+              }}</span>
+              )
+            </li>
+          </ul>
+        </template>
+        <template #item-number="{ note }">
+          <button
+            @click="openNoteModal(note)"
+            class="px-3 py-2 rounded-lg bg-purple-700 text-white font-semibold"
+          >
+            Add Note
+          </button>
         </template>
       </EasyDataTable>
     </div>
