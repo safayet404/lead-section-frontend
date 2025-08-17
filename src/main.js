@@ -11,5 +11,6 @@ const app = createApp(App)
 
 app.use(router)
 app.component('EasyDataTable', Vue3EasyDataTable)
+
 app.use(createToaster())
 app.mount('#app')

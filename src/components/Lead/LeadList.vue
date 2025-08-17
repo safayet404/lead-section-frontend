@@ -2,7 +2,11 @@
 import { ref, onMounted, computed } from 'vue'
 import api from '@/lib/api'
 import EasyDataTable from 'vue3-easy-data-table'
+import { globalState } from '@/stores/globalState'
+import { createToaster } from '@meforma/vue-toaster'
+import { Users, Check, Clock, User, Clock1 } from 'lucide-vue-next'
 
+const toast = createToaster()
 // Table data
 const leads = ref([])
 const loading = ref(true)
@@ -73,6 +77,8 @@ const updateLeadStatus = async () => {
     console.error('Failed to update lead status:', err)
   }
 }
+
+const themeColor = '#8176F1'
 // Search
 const searchValue = ref('')
 const searchField = ['id', 'name', 'email']
@@ -161,36 +167,53 @@ const leadsWithAging = computed(() => {
   })
 })
 
+const userId = globalState.userId
+
 const noteModal = ref(false)
 const note = ref('')
 const selectedLeadNote = ref(null)
 const selectedUserNote = ref(null)
 
 const openNoteModal = (note) => {
-  selectedLeadNote.value = note.lead_id
-  selectedUserNote.value = note.user_id
+  selectedLeadNote.value = note.id
+  selectedUserNote.value = userId
   noteModal.value = true
-
-  alert(note.user_id, note.lead_id)
 }
 
 const closeModal = () => {
   noteModal.value = false
+  selectedLeadNote.value = null
+  selectedUserNote.value = null
+  note.value = null
 }
 
 const addManagerNote = async () => {
   try {
     const payload = {
-      user_id,
+      user_id: selectedUserNote.value,
+      lead_id: selectedLeadNote.value,
+      note: note.value,
     }
-  } catch (error) {}
+    let response = await api.post('/create-note', payload)
+    if (response.data.status === 'success') {
+      toast.success('Manager Note Added')
+      closeModal()
+
+      const leadRes = await api.get('/lead-list')
+      leads.value = leadRes?.data?.list || []
+    }
+  } catch (error) {
+    console.log(error)
+  }
 }
 </script>
 
 <template>
   <div class="p-4">
     <!-- Filter Form -->
-    <div class="grid grid-cols-4 gap-4 bg-white p-4 rounded shadow">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 bg-white p-4 rounded shadow"
+    >
       <select v-model="selectedUser" class="border p-2 text-black rounded">
         <option value="">Select User</option>
         <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }} - {{ u.email }}</option>
@@ -234,104 +257,134 @@ const addManagerNote = async () => {
       <input type="date" v-model="selectedDate" class="border p-2 rounded" />
     </div>
 
-    <!-- Stats -->
-
-    <div class="flex gap-4 mt-4">
-      <div class="bg-purple-500 text-white p-4 rounded flex-1 text-center">
-        <div class="text-lg font-bold">Total Leads</div>
-        <div class="text-2xl">{{ totalLeads }}</div>
-      </div>
-      <div class="bg-green-500 text-white p-4 rounded flex-1 text-center">
-        <div class="text-lg font-bold">Active Leads</div>
-        <div class="text-2xl">{{ totalLeads - pendingCalls }}</div>
-      </div>
-      <div class="bg-yellow-500 text-white p-4 rounded flex-1 text-center">
-        <div class="text-lg font-bold">Pending Calls</div>
-        <div class="text-2xl">{{ pendingCalls }}</div>
-      </div>
-    </div>
-
     <!-- Table -->
     <div v-if="loading" class="mt-4">Loading...</div>
     <div v-else-if="error" class="text-red-500 mt-4">{{ error }}</div>
     <div v-else class="mt-4">
-      <input
-        v-model="searchValue"
-        type="text"
-        placeholder="Search Leads..."
-        class="border p-1 rounded mb-3"
-      />
-      <EasyDataTable
-        :headers="headers"
-        :items="leadsWithAging"
-        :search-field="searchField"
-        :search-value="searchValue"
-        buttons-pagination
-        alternating
-      >
-        <template #item-status_details="{ status, id }">
-          <div
-            class="cursor-pointer"
-            @click="openStatusModal(filteredLeads.find((l) => l.id === id))"
-          >
-            <strong
-              class="rounded-2xl p-2"
-              :style="{
-                color: status?.color_code,
-                border: `1px solid ${status?.color_code}`,
-              }"
-              >{{ status?.name }}</strong
+      <div class="flex mt-10 justify-between">
+        <div class="my-auto">
+          <input
+            v-model="searchValue"
+            type="text"
+            placeholder="Search Leads..."
+            class="border p-1 rounded mb-3"
+          />
+        </div>
+
+        <div class="flex flex-wrap gap-4 mb-4">
+          <div class="bg-[#5853E9] text-white flex gap-3 px-5 py-2 rounded-xl">
+            <div class="my-auto">
+              <Users />
+            </div>
+            <div>
+              <p class="text-base">Total Leads</p>
+              <p class="font-semibold text-base">{{ totalLeads }}</p>
+            </div>
+          </div>
+          <div class="bg-[#0C9F70] text-white flex gap-3 px-5 py-2 rounded-xl">
+            <div class="my-auto">
+              <Check />
+            </div>
+            <div>
+              <p class="text-base">Active Leads</p>
+              <p class="font-semibold text-base">{{ totalLeads - pendingCalls }}</p>
+            </div>
+          </div>
+          <div class="bg-[#DD7F09] text-white flex gap-3 px-5 py-2 rounded-xl">
+            <div class="my-auto">
+              <Clock />
+            </div>
+            <div>
+              <p class="text-base">Pending Leads</p>
+              <p class="font-semibold text-base">{{ pendingCalls }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="overflow-x-auto w-full">
+        <EasyDataTable
+          class="min-w-[800px]"
+          :headers="headers"
+          :items="leadsWithAging"
+          :search-field="searchField"
+          :search-value="searchValue"
+          :theme-color="themeColor"
+          buttons-pagination
+          alternating
+        >
+          <template #loading>
+            <img
+              src="https://i.pinimg.com/originals/94/fd/2b/94fd2bf50097ade743220761f41693d5.gif"
+              style="width: 100px; height: 80px"
+            />
+          </template>
+          <template #item-status_details="{ status, id }">
+            <div
+              class="cursor-pointer"
+              @click="openStatusModal(filteredLeads.find((l) => l.id === id))"
             >
-            <br />
-          </div>
-        </template>
-        <template #item-contact_info="{ name, phone, email, lead_country, ielts_or_english_test }">
-          <div>
-            <strong>{{ name }}</strong
-            ><br />
-            📞 {{ phone }}<br />
-            ✉️ {{ email }} <br />
-            🌍 {{ lead_country?.name }} <br />
-            📖 {{ ielts_or_english_test }}
-          </div>
-        </template>
-
-        <template #item-assignment_details="{ user }">
-          <div v-if="user" class="py-5">
-            <strong>{{ user?.name }}</strong>
-            ( {{ user?.email }} ) <br />
-            <br />
-            Branch Name: {{ user?.branch?.name }}
-          </div>
-
-          <div v-else>Not Assigned Yet</div>
-        </template>
-
-        <template #item-note_details="{ note }">
-          <ul v-for="n in note" class="py-1">
-            <li class="list-disc">
-              <span class="font-semibold text-gray-600 text-sm"> {{ n.note }}</span> (
-              <span class="text-[#0D81CF] text-sm"> {{ n.user?.name }}</span> ,
-              <span class="text-[#FFA90C] text-sm">{{
-                new Date(n.created_at).toLocaleDateString('en-GB', {
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: true,
-                })
-              }}</span>
-              )
-            </li>
-          </ul>
-        </template>
-        <template #item-number="{ note }">
-          <button
-            @click="openNoteModal(note)"
-            class="px-3 py-2 rounded-lg bg-purple-700 text-white font-semibold"
+              <strong
+                class="rounded-2xl p-2"
+                :style="{
+                  color: status?.color_code,
+                  border: `1px solid ${status?.color_code}`,
+                }"
+                >{{ status?.name }}</strong
+              >
+              <br />
+            </div>
+          </template>
+          <template
+            #item-contact_info="{ name, phone, email, lead_country, ielts_or_english_test }"
           >
-            Add Note
-          </button>
-        </template>
-      </EasyDataTable>
+            <div>
+              <strong>{{ name }}</strong
+              ><br />
+              📞 {{ phone }}<br />
+              ✉️ {{ email }} <br />
+              🌍 {{ lead_country?.name }} <br />
+              📖 {{ ielts_or_english_test }}
+            </div>
+          </template>
+
+          <template #item-assignment_details="{ user }">
+            <div v-if="user" class="py-5">
+              <strong>{{ user?.name }}</strong>
+              ( {{ user?.email }} ) <br />
+              <br />
+              Branch Name: {{ user?.branch?.name }}
+            </div>
+
+            <div v-else>Not Assigned Yet</div>
+          </template>
+
+          <template #item-note_details="{ note }">
+            <ul v-for="n in note" class="py-1">
+              <li class="list-disc">
+                <span class="font-semibold text-gray-600 text-sm"> {{ n.note }}</span> (
+                <span class="text-[#0D81CF] text-sm"> {{ n.user?.name }}</span> ,
+                <span class="text-[#FFA90C] text-sm">{{
+                  new Date(n.created_at).toLocaleDateString('en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: true,
+                  })
+                }}</span>
+                )
+              </li>
+            </ul>
+          </template>
+          <template #item-number="{ id }">
+            <button
+              @click="openNoteModal({ id })"
+              class="px-3 py-2 cursor-pointer rounded-lg bg-purple-700 text-white font-semibold"
+            >
+              Add Note
+            </button>
+          </template>
+        </EasyDataTable>
+      </div>
     </div>
 
     <Transition name="modal-fade">
@@ -372,6 +425,40 @@ const addManagerNote = async () => {
         </div>
       </div>
     </Transition>
+
+    <Transition name="modal-fade">
+      <div
+        v-if="noteModal"
+        class="fixed top-0 left-0 w-[100%] h-[100%] flex justify-center items-center z-50 bg-black/50"
+      >
+        <div class="bg-white rounded p-4 w-[500px] shadow-2xl relative">
+          <h1 class="font-semibold">Manager Note Add</h1>
+          <button
+            @click="closeModal"
+            class="absolute font-bold text-lg cursor-pointer top-2 text-red-700 right-3"
+          >
+            X
+          </button>
+
+          <form @submit.prevent="addManagerNote">
+            <textarea
+              v-model="note"
+              class="mt-5 border w-full rounded p-2 h-32 border-gray-500"
+              placeholder="Enter the note"
+            />
+
+            <div class="flex justify-end gap-2 mt-5">
+              <button
+                type="submit"
+                class="bg-[#AD46FF] py-2 px-4 rounded-lg text-white cursor-pointer"
+              >
+                {{ editingEvent ? 'Save Changes' : 'Add' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Transition>
   </div>
 </template>
 
@@ -406,5 +493,20 @@ const addManagerNote = async () => {
   width: 400px;
   max-width: 90%;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Optional: To improve the look of the scrollbar on some browsers */
+.table-container::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 4px;
 }
 </style>

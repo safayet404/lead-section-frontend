@@ -1,6 +1,6 @@
 <script setup>
 import api from '@/lib/api'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, Transition } from 'vue'
 import EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
 import { createToaster } from '@meforma/vue-toaster'
@@ -12,7 +12,7 @@ const searchValue = ref('')
 const searchField = ['id', 'name']
 
 const Header = [
-  { text: ' ID', value: 'id' },
+  { text: 'ID', value: 'id' },
   { text: 'Name', value: 'name' },
   { text: 'Action', value: 'number' },
 ]

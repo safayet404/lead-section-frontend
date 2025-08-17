@@ -23,8 +23,6 @@ onMounted(async () => {
     const response = await api.get('/profile')
 
     profile.value = response?.data?.data || []
-
-    console.log('values', response.data.data)
   } catch (error) {
     error.value = error.message || 'Failed to load profile data'
   } finally {
