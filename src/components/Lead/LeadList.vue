@@ -88,10 +88,10 @@ const headers = [
   { text: 'ID', value: 'id' },
   { text: 'Aging', value: 'aging' },
   { text: 'Lead Country', value: 'lead_country.name' },
-  { text: 'Current Status', value: 'status_details' },
+  { text: 'Current Status', value: 'status_details', width: 200 },
   { text: 'Contact Information', value: 'contact_info' },
   { text: 'Assignment Details', value: 'assignment_details' },
-  { text: 'Manager Note', value: 'note_details' },
+  { text: 'Manager Note', value: 'note_details', width: 400 },
   { text: 'Assigned Status', value: 'assign_type.name' },
   { text: 'Date', value: 'lead_date' },
   { text: 'Actions', value: 'number' },
@@ -212,14 +212,14 @@ const addManagerNote = async () => {
   <div class="p-4">
     <!-- Filter Form -->
     <div
-      class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 bg-white p-4 rounded shadow"
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-white p-4 rounded shadow"
     >
       <select v-model="selectedUser" class="border p-2 text-black rounded">
         <option value="">Select User</option>
         <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }} - {{ u.email }}</option>
       </select>
 
-      <select v-model="selectedLeadHealth" class="border p-2 rounded">
+      <select v-model="selectedLeadHealth" class="border p-2 rounded w-full">
         <option value="">Select Health Type</option>
         <option v-for="h in leadHealthTypes" :key="h" :value="h">{{ h }}</option>
       </select>
@@ -304,14 +304,16 @@ const addManagerNote = async () => {
 
       <div class="overflow-x-auto w-full">
         <EasyDataTable
-          class="min-w-[800px]"
+          class="min-w-[900px]"
           :headers="headers"
           :items="leadsWithAging"
           :search-field="searchField"
           :search-value="searchValue"
           :theme-color="themeColor"
           buttons-pagination
+          :loading="loading"
           alternating
+          table-class-name="customize-table table-container"
         >
           <template #loading>
             <img
@@ -495,18 +497,32 @@ const addManagerNote = async () => {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.table-container {
-  overflow-x: auto;
-  white-space: nowrap;
+.customize-table {
+  --easy-table-header-background-color: #8176f1;
+  --easy-table-header-font-color: #fff;
+  --easy-table-header-height: 70px;
+  --easy-table-header-font-size: 15px;
+  --easy-table-body: 15px;
+
+  --easy-table-scrollbar-track-color: #2d3a4f;
+  --easy-table-scrollbar-color: #2d3a4f;
+  --easy-table-scrollbar-thumb-color: #4c5d7a;
+  --easy-table-scrollbar-corner-color: #2d3a4f;
 }
 
-/* Optional: To improve the look of the scrollbar on some browsers */
+.table-container {
+  overflow-x: auto;
+  scrollbar-color: #4c5d7a #2d3a4f;
+  scrollbar-width: thin;
+}
 .table-container::-webkit-scrollbar {
   height: 8px;
 }
-
 .table-container::-webkit-scrollbar-thumb {
-  background-color: #888;
+  background: #4c5d7a;
   border-radius: 4px;
+}
+.table-container::-webkit-scrollbar-track {
+  background: #2d3a4f;
 }
 </style>
