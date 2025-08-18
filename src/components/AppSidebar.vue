@@ -113,8 +113,7 @@ const menuItems = [
     icon: Leaf,
     children: [
       { label: 'All Lead', to: '/lead' },
-      { label: 'Roles', to: '/roles' },
-      { label: 'Permissions', to: '/permissions' },
+      { label: 'Lead Assign Operation', to: '/lead-assign' },
     ],
   },
 
