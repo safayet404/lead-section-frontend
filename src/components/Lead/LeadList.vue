@@ -302,9 +302,8 @@ const addManagerNote = async () => {
         </div>
       </div>
 
-      <div class="overflow-x-auto w-full">
+      <div>
         <EasyDataTable
-          class="min-w-[900px]"
           :headers="headers"
           :items="leadsWithAging"
           :search-field="searchField"
@@ -313,7 +312,7 @@ const addManagerNote = async () => {
           buttons-pagination
           :loading="loading"
           alternating
-          table-class-name="customize-table table-container"
+          table-class-name="customize-table"
         >
           <template #loading>
             <img
@@ -508,21 +507,5 @@ const addManagerNote = async () => {
   --easy-table-scrollbar-color: #2d3a4f;
   --easy-table-scrollbar-thumb-color: #4c5d7a;
   --easy-table-scrollbar-corner-color: #2d3a4f;
-}
-
-.table-container {
-  overflow-x: auto;
-  scrollbar-color: #4c5d7a #2d3a4f;
-  scrollbar-width: thin;
-}
-.table-container::-webkit-scrollbar {
-  height: 8px;
-}
-.table-container::-webkit-scrollbar-thumb {
-  background: #4c5d7a;
-  border-radius: 4px;
-}
-.table-container::-webkit-scrollbar-track {
-  background: #2d3a4f;
 }
 </style>

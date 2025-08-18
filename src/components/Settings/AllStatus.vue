@@ -15,7 +15,7 @@ const Header = [
   { text: ' ID', value: 'id' },
   { text: 'Name', value: 'name' },
   { text: 'Color Code', value: 'color_details' },
-  { text: 'Lead Health Type', value: 'health_type' },
+  { text: 'Lead Health Type', value: 'health_details' },
   { text: 'Action', value: 'number' },
 ]
 
@@ -99,6 +99,7 @@ const handleEntitySubmission = async () => {
 
     if (response.data.status === 'success') {
       entityName.value = ''
+      colorCode.value = ''
       showModal.value = false
       toast.success('Operation success')
       await fetchData()
@@ -150,7 +151,24 @@ const handleEntitySubmission = async () => {
       :search-value="searchValue"
     >
       <template #item-color_details="{ color_code }">
-        <strong :style="{ color: color_code }">{{ color_code }}</strong>
+        <div class="flex gap-2">
+          <input class="h-10 w-10 rounded-xl" type="color" :value="color_code" />
+          <strong class="my-auto">{{ color_code }}</strong>
+        </div>
+      </template>
+      <template #item-health_details="{ health_type }">
+        <div class="flex gap-2">
+          <p
+            class="px-2 font-semibold py-1 text-base rounded-lg"
+            :style="{
+              color: health_type === 'Hot' ? 'red' : health_type === 'Warm' ? 'orange' : '#00BAD0',
+              backgroundColor:
+                health_type === 'Hot' ? '#FFE2E3' : health_type === 'Warm' ? '#FFEFE1' : '#D6F4F7',
+            }"
+          >
+            {{ health_type }}
+          </p>
+        </div>
       </template>
 
       <template #item-number="{ id, name, color_code, health_type }">
