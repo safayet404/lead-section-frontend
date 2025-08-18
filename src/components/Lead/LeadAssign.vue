@@ -1,6 +1,9 @@
 <script setup>
 import api from '@/lib/api'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { createToaster } from '@meforma/vue-toaster'
+const toast = createToaster()
+
 const loading = ref(true)
 const error = ref(null)
 
@@ -34,13 +37,31 @@ onMounted(async () => {
   }
 })
 
+const totalAvailable = ref(0)
+const totalAssigned = ref(0)
+const remainingLeads = computed(() => Math.max(0, totalAvailable.value - totalAssigned.value))
 const fetchAssignableLead = async () => {
-  const data = {
-    leadType: selectedLeadType.value,
-    branch: selectedBranch.value,
-    assignBranch: selectedAssignBranch.value,
+  const payload = {
+    lead_type: Number(selectedLeadType.value),
+    lead_country: selectedCountry.value ? Number(selectedCountry.value) : null,
+    lead_branch: Number(selectedBranch.value),
+    event_id: selectedEvent.value ? Number(selectedEvent.value) : null,
+    assign_branch: Number(selectedAssignBranch.value),
   }
-  alert(JSON.stringify(data))
+
+  const res = await api.post('/lead-preview', payload)
+
+  if (res.data.status === 'success') {
+    console.log('data', res.data)
+
+    console.log('lead', res.data.status)
+    console.log('lead', res.data?.remaining_leads)
+    totalAvailable.value = res.data?.total_leads_available
+
+    totalAssigned.value = 0
+  } else {
+    console.log('preview failed')
+  }
 }
 </script>
 
@@ -97,7 +118,7 @@ const fetchAssignableLead = async () => {
 
     <div v-if="selectedLeadType && selectedBranch && (selectedEvent || selectedCountry)">
       <hr class="text-gray-300 mt-10 mb-10" />
-      <p lass="text-lg text-gray-600 font-semibold">
+      <p class="text-lg text-gray-600 font-semibold">
         Assign Leads to Counsellors(To complete this step, select a branch)
       </p>
       <div>
@@ -111,12 +132,18 @@ const fetchAssignableLead = async () => {
       </div>
     </div>
 
-    <div @click="fetchAssignableLead" v-if="selectedAssignBranch" class="flex justify-center">
+    <div v-if="selectedAssignBranch" class="flex justify-center">
       <button
+        @click="fetchAssignableLead"
         class="mt-5 items-center cursor-pointer px-5 py-2 bg-[#7367f0] rounded block text-white"
       >
         Continue
       </button>
+    </div>
+
+    <div>
+      <p>{{ totalAvailable }}</p>
+      <p>{{ remainingLeads }}</p>
     </div>
   </div>
 </template>
