@@ -16,6 +16,8 @@ const selectedAssignBranch = ref('')
 const branches = ref([])
 const events = ref([])
 const countries = ref([])
+const groupUser = ref([])
+const assignInputs = ref({})
 
 onMounted(async () => {
   try {
@@ -52,17 +54,24 @@ const fetchAssignableLead = async () => {
   const res = await api.post('/lead-preview', payload)
 
   if (res.data.status === 'success') {
-    console.log('data', res.data)
-
-    console.log('lead', res.data.status)
-    console.log('lead', res.data?.remaining_leads)
     totalAvailable.value = res.data?.total_leads_available
+    console.log(res.data)
+    console.log('user', res.data.users)
+    console.log('group users', res.data.groupUser)
 
     totalAssigned.value = 0
+
+    groupUser.value = res.data.groupUser
+
+    if (totalAvailable.value === 0) {
+      showLeadModal.value = true
+    }
   } else {
     console.log('preview failed')
   }
 }
+
+const showLeadModal = ref(false)
 </script>
 
 <template>
@@ -141,9 +150,90 @@ const fetchAssignableLead = async () => {
       </button>
     </div>
 
-    <div>
-      <p>{{ totalAvailable }}</p>
-      <p>{{ remainingLeads }}</p>
+    <div v-if="totalAvailable">
+      <div class="flex flex-wrap mt-10 gap-3 text-white text-xl">
+        <div class="bg-[#7367F0] p-5 flex-1 rounded text-center">
+          <p>Total Leads Available</p>
+          <p>{{ totalAvailable }}</p>
+        </div>
+        <div class="bg-[#28C76F] p-5 flex-1 rounded text-center">
+          <p>Total Leads Assigned</p>
+          <p>{{ totalAssigned }}</p>
+        </div>
+        <div class="bg-[#00BAD1] p-5 flex-1 rounded text-center">
+          <p>Remaining Leads</p>
+          <p>{{ remainingLeads }}</p>
+        </div>
+      </div>
+
+      <!-- User Table -->
+
+      <table class="w-full rounded-l-lg mt-10">
+        <thead class="text-center">
+          <tr>
+            <th class="p-2">Branch</th>
+            <th class="p-2">Name</th>
+            <th class="p-2">Email</th>
+            <th class="p-2">Current Lead</th>
+            <th class="p-2">Assigned Number of Leads</th>
+          </tr>
+        </thead>
+
+        <tbody class="text-center text-gray-600">
+          <tr v-for="user in groupUser" :key="user.id" class="border-t border-gray-200">
+            <td class="p-2">{{ user.branch_name }}</td>
+            <td class="p-2">{{ user.name }}</td>
+            <td class="p-2">{{ user.email }}</td>
+            <td class="p-2">
+              <div class="py-2">
+                <button class="bg-red-600 text-white text-sm font-medium rounded px-2 py-1">
+                  Total Lead : {{ user.current_total }}
+                </button>
+              </div>
+              <div
+                class="bg-[#EAE8FD] text-left flex justify-between p-2 rounded"
+                v-for="country in user.by_country"
+              >
+                <button class="bg-[#7367F0] text-sm text-white rounded px-2 py-1">
+                  {{ country.country_name }}
+                </button>
+                <button class="bg-[#28C76F] rounded-[50%] px-3 text-white">
+                  {{ country.total }}
+                </button>
+              </div>
+            </td>
+
+            <td class="p-2">
+              <input
+                type="number"
+                v-model="assignInputs[user.id]"
+                min="0"
+                placeholder="Enter the lead number"
+                class="w-[80%] border border-gray-200 rounded p-1"
+              />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div
+      v-if="showLeadModal"
+      class="fixed top-0 left-0 w-[100%] h-[100%] flex justify-center items-center z-50 bg-black/50"
+    >
+      <div class="bg-white w-2/6 rounded-lg p-4 text-center">
+        <img class="w-50 h-40 mx-auto mt-5" src="../../assets/warning.png" alt="warning" />
+        <p class="font-semibold text-gray-600 text-4xl mt-5">Warning !</p>
+        <p class="mt-5 text-xl">No unassiged leads found</p>
+        <div>
+          <button
+            @click="showLeadModal = false"
+            class="bg-[#7367f0] text-white px-5 py-2 rounded mt-5 text-xl"
+          >
+            OK
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
