@@ -88,10 +88,10 @@ const headers = [
   { text: 'ID', value: 'id' },
   { text: 'Aging', value: 'aging' },
   { text: 'Lead Country', value: 'lead_country.name' },
-  { text: 'Current Status', value: 'status_details', width: 200 },
+  { text: 'Current Status', value: 'status_details', width: 250 },
   { text: 'Contact Information', value: 'contact_info' },
-  { text: 'Assignment Details', value: 'assignment_details' },
-  { text: 'Manager Note', value: 'note_details', width: 400 },
+  { text: 'Assignment Details', value: 'assignment_details', width: 200 },
+  { text: 'Manager Note', value: 'note_details', width: 300 },
   { text: 'Assigned Status', value: 'assign_type.name' },
   { text: 'Date', value: 'lead_date' },
   { text: 'Actions', value: 'number' },
@@ -214,47 +214,47 @@ const addManagerNote = async () => {
     <div
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 bg-white p-4 rounded shadow"
     >
-      <select v-model="selectedUser" class="border p-2 text-black rounded">
+      <select v-model="selectedUser" class="border border-gray-300 p-2 text-black rounded">
         <option value="">Select User</option>
         <option v-for="u in users" :key="u.id" :value="u.id">{{ u.name }} - {{ u.email }}</option>
       </select>
 
-      <select v-model="selectedLeadHealth" class="border p-2 rounded w-full">
+      <select v-model="selectedLeadHealth" class="border border-gray-300 p-2 rounded w-full">
         <option value="">Select Health Type</option>
         <option v-for="h in leadHealthTypes" :key="h" :value="h">{{ h }}</option>
       </select>
 
-      <select v-model="selectedAssignedStatus" class="border p-2 rounded">
+      <select v-model="selectedAssignedStatus" class="border border-gray-300 p-2 rounded">
         <option value="">Select Assigned Status</option>
         <option v-for="a in assignType" :key="a" :value="a.id">{{ a.name }}</option>
       </select>
 
-      <select v-model="selectedLeadStatus" class="border p-2 rounded">
+      <select v-model="selectedLeadStatus" class="border border-gray-300 p-2 rounded">
         <option value="">Select Lead Status</option>
         <option v-for="s in statuses" :key="s.id" :value="s.id">{{ s.name }}</option>
       </select>
 
-      <select v-model="selectedLeadType" class="border p-2 rounded">
+      <select v-model="selectedLeadType" class="border border-gray-300 p-2 rounded">
         <option value="">Select Lead Type</option>
         <option v-for="t in leadTypes" :key="t.id" :value="t.id">{{ t.name }}</option>
       </select>
 
-      <select v-model="selectedEvent" class="border p-2 rounded">
+      <select v-model="selectedEvent" class="border border-gray-300 p-2 rounded">
         <option value="">Select Event</option>
         <option v-for="e in events" :key="e.id" :value="e.id">{{ e.name }}</option>
       </select>
 
-      <select v-model="selectedCountry" class="border p-2 rounded">
+      <select v-model="selectedCountry" class="border border-gray-300 p-2 rounded">
         <option value="">Select Country</option>
         <option v-for="c in leadCountry" :key="c.id" :value="c.id">{{ c.name }}</option>
       </select>
 
-      <select v-model="selectedBranch" class="border p-2 rounded">
+      <select v-model="selectedBranch" class="border border-gray-300 p-2 rounded">
         <option value="">Select Branch</option>
         <option v-for="b in branches" :key="b.id" :value="b.id">{{ b.name }}</option>
       </select>
 
-      <input type="date" v-model="selectedDate" class="border p-2 rounded" />
+      <input type="date" v-model="selectedDate" class="border border-gray-300 p-2 rounded" />
     </div>
 
     <!-- Table -->
@@ -267,7 +267,7 @@ const addManagerNote = async () => {
             v-model="searchValue"
             type="text"
             placeholder="Search Leads..."
-            class="border p-1 rounded mb-3"
+            class="border border-gray-300 p-1 rounded mb-3"
           />
         </div>
 
@@ -326,13 +326,14 @@ const addManagerNote = async () => {
               @click="openStatusModal(filteredLeads.find((l) => l.id === id))"
             >
               <strong
-                class="rounded-2xl p-2"
+                class="rounded-2xl p-1"
                 :style="{
                   color: status?.color_code,
                   border: `1px solid ${status?.color_code}`,
                 }"
-                >{{ status?.name }}</strong
               >
+                {{ status?.name }}
+              </strong>
               <br />
             </div>
           </template>

@@ -1,6 +1,6 @@
 <script setup>
 import api from '@/lib/api'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { createToaster } from '@meforma/vue-toaster'
 const toast = createToaster()
 
@@ -41,7 +41,7 @@ onMounted(async () => {
 })
 
 const totalAvailable = ref(0)
-const totalAssigned = ref(0)
+
 const remainingLeads = computed(() => Math.max(0, totalAvailable.value - totalAssigned.value))
 const fetchAssignableLead = async () => {
   const payload = {
@@ -51,6 +51,8 @@ const fetchAssignableLead = async () => {
     event_id: selectedEvent.value ? Number(selectedEvent.value) : null,
     assign_branch: Number(selectedAssignBranch.value),
   }
+
+  console.log('aa', payload)
 
   const res = await api.post('/lead-preview', payload)
 
@@ -87,8 +89,25 @@ const buildAssignments = () => {
   return assignments
 }
 
+const totalAssigned = computed(() => {
+  let total = 0
+  for (const count of Object.values(assignInputs.value)) {
+    const num = Number(count)
+    if (!isNaN(num) && num > 0) {
+      total += num
+    }
+  }
+  return total
+})
 const submitAssignments = async () => {
   const assignments = buildAssignments()
+
+  if (totalAssigned.value > totalAvailable.value) {
+    toast.error(
+      'The total number of leads assigned exceeds the available leads. Please adjust your inputs.',
+    )
+    return
+  }
 
   const payload = {
     lead_type: Number(selectedLeadType.value),
@@ -100,9 +119,16 @@ const submitAssignments = async () => {
   }
 
   try {
-    const res = await api.post('/lead-assign', payload)
+    const res = await api.post('/assign-lead', payload)
     if (res.data.status === 'success') {
       toast.success('Leads assigned successfullyy')
+      selectedLeadType.value = ''
+      selectedAssignBranch.value = ''
+      selectedCountry.value = ''
+      selectedBranch.value = ''
+      selectedEvent.value = ''
+      totalAvailable.value = 0
+      groupUser.value = []
     } else {
       toast.error('Assignment failed.')
     }
@@ -110,6 +136,42 @@ const submitAssignments = async () => {
     toast.error(error.message || 'Error while assigning leads.')
   }
 }
+
+watch(
+  assignInputs,
+  (newVal) => {
+    let currentTotalAssigned = 0
+    for (const [userId, count] of Object.entries(newVal)) {
+      const num = Number(count)
+      if (!isNaN(num) && num > 0) {
+        currentTotalAssigned += num
+      }
+    }
+
+    if (currentTotalAssigned > totalAvailable.value) {
+      let excess = currentTotalAssigned - totalAvailable.value
+
+      for (let i = groupUser.value.length - 1; i >= 0; i--) {
+        const user = groupUser.value[i]
+        const userId = user.id
+        const userLeads = Number(assignInputs.value[userId])
+
+        if (!isNaN(userLeads) && userLeads > 0) {
+          if (userLeads > excess) {
+            assignInputs.value[userId] = userLeads - excess
+            excess = 0
+            break
+          } else {
+            excess -= userLeads
+            assignInputs.value[userId] = 0
+          }
+        }
+      }
+      toast.error('Cannot assign more leads than are available.')
+    }
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -206,12 +268,14 @@ const submitAssignments = async () => {
 
       <!-- User Table -->
 
-      <button
-        @click="submitAssignments"
-        class="flex justify-end px-4 py-2 bg-[#7367f0] text-white rounded"
-      >
-        Save Assign Lead
-      </button>
+      <div class="flex justify-end">
+        <button
+          @click="submitAssignments"
+          class="flex cursor-pointer mt-5 px-4 py-2 bg-[#7367f0] text-white rounded"
+        >
+          Save Assign Lead
+        </button>
+      </div>
 
       <table class="w-full rounded-l-lg mt-10">
         <thead class="text-center">
@@ -229,7 +293,7 @@ const submitAssignments = async () => {
             <td class="p-2">{{ user.branch_name }}</td>
             <td class="p-2">{{ user.name }}</td>
             <td class="p-2">{{ user.email }}</td>
-            <td class="p-2">
+            <td class="p-2 text-left">
               <div class="py-2">
                 <button class="bg-red-600 text-white text-sm font-medium rounded px-2 py-1">
                   Total Lead : {{ user.current_total }}
