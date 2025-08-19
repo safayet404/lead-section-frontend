@@ -7,6 +7,7 @@ const toast = createToaster()
 const loading = ref(true)
 const error = ref(null)
 
+const showLeadModal = ref(false)
 const selectedLeadType = ref('')
 const selectedCountry = ref('')
 const selectedEvent = ref('')
@@ -71,7 +72,44 @@ const fetchAssignableLead = async () => {
   }
 }
 
-const showLeadModal = ref(false)
+const buildAssignments = () => {
+  const assignments = []
+
+  for (const [userId, count] of Object.entries(assignInputs.value)) {
+    if (count && Number(count) > 0) {
+      assignments.push({
+        user_id: Number(userId),
+        leads: Number(count),
+      })
+    }
+  }
+
+  return assignments
+}
+
+const submitAssignments = async () => {
+  const assignments = buildAssignments()
+
+  const payload = {
+    lead_type: Number(selectedLeadType.value),
+    lead_country: selectedCountry.value ? Number(selectedCountry.value) : null,
+    lead_branch: Number(selectedBranch.value),
+    event_id: selectedEvent.value ? Number(selectedEvent.value) : null,
+    assign_branch: Number(selectedAssignBranch.value),
+    assignments,
+  }
+
+  try {
+    const res = await api.post('/lead-assign', payload)
+    if (res.data.status === 'success') {
+      toast.success('Leads assigned successfullyy')
+    } else {
+      toast.error('Assignment failed.')
+    }
+  } catch (error) {
+    toast.error(error.message || 'Error while assigning leads.')
+  }
+}
 </script>
 
 <template>
@@ -167,6 +205,13 @@ const showLeadModal = ref(false)
       </div>
 
       <!-- User Table -->
+
+      <button
+        @click="submitAssignments"
+        class="flex justify-end px-4 py-2 bg-[#7367f0] text-white rounded"
+      >
+        Save Assign Lead
+      </button>
 
       <table class="w-full rounded-l-lg mt-10">
         <thead class="text-center">
