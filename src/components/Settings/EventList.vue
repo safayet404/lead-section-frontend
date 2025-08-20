@@ -135,6 +135,7 @@ const handleEventSubmission = async () => {
       :rows-per-page="10"
       :search-field="searchField"
       :search-value="searchValue"
+      table-class-name="customize-table"
     >
       <template #item-number="{ id, name }">
         <button
@@ -192,5 +193,18 @@ const handleEventSubmission = async () => {
 .modal-fade-leave-to .modal-container {
   transform: translateY(-20px);
   opacity: 0;
+}
+
+.customize-table {
+  --easy-table-header-background-color: #8176f1;
+  --easy-table-header-font-color: #fff;
+  --easy-table-header-height: 70px;
+  --easy-table-header-font-size: 15px;
+  --easy-table-body: 15px;
+
+  --easy-table-scrollbar-track-color: #2d3a4f;
+  --easy-table-scrollbar-color: #2d3a4f;
+  --easy-table-scrollbar-thumb-color: #4c5d7a;
+  --easy-table-scrollbar-corner-color: #2d3a4f;
 }
 </style>

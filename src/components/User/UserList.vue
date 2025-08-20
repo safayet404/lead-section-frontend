@@ -1,6 +1,6 @@
 <script setup>
 import api from '@/lib/api'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import EasyDataTable from 'vue3-easy-data-table'
 import 'vue3-easy-data-table/dist/style.css'
 import { createToaster } from '@meforma/vue-toaster'
@@ -11,12 +11,17 @@ const branches = ref([])
 const loading = ref(true)
 const error = ref(null)
 const searchValue = ref('')
-const searchField = ['id', 'name']
+const searchField = ['id', 'name', 'email']
+const selectedRole = ref('')
+const selectedParent = ref('')
+const selectedBranch = ref('')
 
 const Header = [
   { text: ' ID', value: 'id' },
   { text: 'Name', value: 'name' },
   { text: 'Role', value: 'role.name' },
+  { text: 'Email', value: 'email' },
+  { text: 'Mobile', value: 'mobile' },
   { text: 'Parent', value: 'parent.name' },
   { text: 'Branch', value: 'branch.name' },
   { text: 'Action', value: 'number' },
@@ -41,6 +46,16 @@ const fetchData = async () => {
 
 onMounted(() => {
   fetchData()
+})
+
+const filteredUser = computed(() => {
+  return data.value.filter((u) => {
+    return (
+      (!selectedRole.value || u.role_id === selectedRole.value) &&
+      (!selectedBranch.value || u.branch_id === selectedBranch.value) &&
+      (!selectedParent.value || u.parent_id === selectedParent.value)
+    )
+  })
 })
 
 // Create Modal
@@ -108,7 +123,7 @@ const handleEntitySubmission = async () => {
         branch_id: branch.value,
         parent_id: parent.value,
       }
-      response = await api.post('/status-update', payload)
+      response = await api.put('/user-update', payload)
     } else {
       const payload = {
         name: entityName.value,
@@ -144,6 +159,21 @@ const handleEntitySubmission = async () => {
 </script>
 
 <template>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 shadow">
+    <select v-model="role" class="w-full border border-gray-300 rounded p-2 mt-5">
+      <option value="">Select Roles</option>
+      <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
+    </select>
+    <select v-model="parent" class="w-full border-gray-300 border rounded p-2 mt-5">
+      <option value="">Select Parent</option>
+      <option v-for="u in data" :key="u.id" :value="u.id">{{ u.name }}</option>
+    </select>
+    <select v-model="branch" class="w-full border border-gray-300 rounded p-2 mt-5">
+      <option value="">Select Branch</option>
+      <option v-for="u in branches" :key="u.id" :value="u.id">{{ u.name }}</option>
+    </select>
+  </div>
+
   <div v-if="loading">Loading...</div>
   <div v-else-if="error">{{ error }}</div>
   <div v-else>
@@ -152,14 +182,14 @@ const handleEntitySubmission = async () => {
         <input
           v-model="searchValue"
           type="text"
-          placeholder="Search Events..."
-          class="border p-1 rounded mb-3"
+          placeholder="Search User..."
+          class="border p-1 rounded border-gray-300 mt-5 mb-3"
         />
       </div>
       <div>
         <button
           @click="openCreateModal"
-          class="bg-purple-700 cursor-pointer rounded-lg font-semibold text-white py-2 px-5"
+          class="bg-purple-700 cursor-pointer mt-5 mb-2 rounded-lg font-semibold text-white py-2 px-5"
         >
           Add New User
         </button>
@@ -170,10 +200,11 @@ const handleEntitySubmission = async () => {
       buttons-pagination
       alternating
       :headers="Header"
-      :items="data"
+      :items="filteredUser"
       :rows-per-page="10"
       :search-field="searchField"
       :search-value="searchValue"
+      table-class-name="customize-table"
     >
       <template #item-number="{ id, name, email, password, role_id, branch_id, parent_id, mobile }">
         <button
@@ -232,7 +263,9 @@ const handleEntitySubmission = async () => {
             </select>
             <select v-model="parent" class="w-full border rounded p-2 mt-5">
               <option value="">Select Parent</option>
-              <option v-for="u in data" :key="u.id" :value="u.id">{{ u.name }}</option>
+              <option v-for="u in data" :key="u.id" :value="u.id">
+                {{ u.name }} - ({{ u.branch.name }}) - {{ u.role.name }}
+              </option>
             </select>
             <select v-model="branch" class="w-full border rounded p-2 mt-5">
               <option value="">Select Branch</option>
@@ -264,5 +297,18 @@ const handleEntitySubmission = async () => {
 .modal-fade-leave-to .modal-container {
   transform: translateY(-20px);
   opacity: 0;
+}
+
+.customize-table {
+  --easy-table-header-background-color: #8176f1;
+  --easy-table-header-font-color: #fff;
+  --easy-table-header-height: 70px;
+  --easy-table-header-font-size: 15px;
+  --easy-table-body: 15px;
+
+  --easy-table-scrollbar-track-color: #2d3a4f;
+  --easy-table-scrollbar-color: #2d3a4f;
+  --easy-table-scrollbar-thumb-color: #4c5d7a;
+  --easy-table-scrollbar-corner-color: #2d3a4f;
 }
 </style>
