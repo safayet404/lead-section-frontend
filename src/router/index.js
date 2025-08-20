@@ -12,6 +12,7 @@ import BranchList from '@/components/Settings/BranchList.vue'
 import EventList from '@/components/Settings/EventList.vue'
 import CountryList from '@/components/Settings/CountryList.vue'
 import LeadAssign from '@/components/Lead/LeadAssign.vue'
+import UserList from '@/components/User/UserList.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -64,6 +65,11 @@ const router = createRouter({
           path: 'country',
           name: 'Country List',
           component: CountryList,
+        },
+        {
+          path: 'user',
+          name: 'User List',
+          component: UserList,
         },
       ],
     },

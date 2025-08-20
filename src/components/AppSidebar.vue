@@ -132,6 +132,11 @@ const menuItems = [
     icon: Users,
     to: '/profile',
   },
+  {
+    label: 'Users',
+    icon: Users,
+    to: '/user',
+  },
 ]
 </script>
 
