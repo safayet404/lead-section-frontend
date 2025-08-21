@@ -1,47 +1,56 @@
-<script>
-import { defineComponent, watch, ref, onMounted } from 'vue'
-import {
-  Chart as ChartJS,
-  Title,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-} from 'chart.js'
-import { Bar } from 'vue-chartjs'
+<template>
+  <div>
+    <canvas ref="chartCanvas"></canvas>
+  </div>
+</template>
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+<script setup>
+import { ref, onMounted } from 'vue'
+import Chart from 'chart.js/auto'
 
-export default defineComponent({
-  name: 'BarChart',
-  props: {
-    chartData: { type: Object, required: true },
-    chartOptions: { type: Object, default: () => ({}) },
-  },
-  setup(props) {
-    const chartRef = ref(null)
+const chartCanvas = ref(null) // bind to <canvas>
+let chartInstance = null
 
-    // Watch for changes and update chart manually
-    watch(
-      () => props.chartData,
-      (newData) => {
-        if (chartRef.value) {
-          chartRef.value.chartInstance.data = newData
-          chartRef.value.chartInstance.update()
-        }
+const data = [
+  { year: 2010, count: 10 },
+  { year: 2011, count: 20 },
+  { year: 2012, count: 15 },
+  { year: 2013, count: 25 },
+  { year: 2014, count: 22 },
+  { year: 2015, count: 30 },
+  { year: 2016, count: 28 },
+]
+
+onMounted(() => {
+  if (chartCanvas.value) {
+    const ctx = chartCanvas.value.getContext('2d')
+
+    // destroy old chart if hot reload
+    if (chartInstance) {
+      chartInstance.destroy()
+    }
+
+    chartInstance = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: data.map((row) => row.year),
+        datasets: [
+          {
+            label: 'My Data',
+            data: data.map((row) => row.count),
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          },
+        ],
       },
-      { deep: true, immediate: true },
-    )
-
-    return { chartRef }
-  },
-  render() {
-    return h(Bar, { ref: 'chartRef', chartData: this.chartData, chartOptions: this.chartOptions })
-  },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            display: true,
+          },
+        },
+      },
+    })
+  }
 })
 </script>
-
-<template>
-  <Bar v-if="chartData" :data="chartData" :options="chartOptions" />
-</template>
