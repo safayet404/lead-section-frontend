@@ -110,6 +110,15 @@ const headers = [
   </div>
 
   <div class="grid mb-5 grid-cols-4 gap-5">
+    <div class="bg-[#19a099] text-white flex gap-3 px-5 py-5 rounded-xl">
+      <div class="my-auto">
+        <Users />
+      </div>
+      <div>
+        <p class="text-base">Total Leads</p>
+        <p class="font-semibold text-base">{{ summary.total }}</p>
+      </div>
+    </div>
     <div class="bg-[#5853E9] text-white flex gap-3 px-5 py-5 rounded-xl">
       <div class="my-auto">
         <Users />
@@ -119,7 +128,7 @@ const headers = [
         <p class="font-semibold text-base">{{ summary.assigned }}</p>
       </div>
     </div>
-    <div class="bg-[#5853E9] text-white flex gap-3 px-5 py-5 rounded-xl">
+    <div class="bg-[#1c4849] text-white flex gap-3 px-5 py-5 rounded-xl">
       <div class="my-auto">
         <Users />
       </div>
@@ -137,12 +146,12 @@ const headers = [
         <p class="font-semibold text-base">{{ summary.contacted }}</p>
       </div>
     </div>
-    <div class="bg-[#aa15af] text-white flex gap-3 px-5 py-5 rounded-xl">
+    <div class="bg-[#c0201a] text-white flex gap-3 px-5 py-5 rounded-xl">
       <div class="my-auto">
         <Clock />
       </div>
       <div>
-        <p class="text-base">Pending Call Leads</p>
+        <p class="text-base">Initial Call Pending</p>
         <p class="font-semibold text-base">{{ summary.pendingCall }}</p>
       </div>
     </div>
@@ -157,7 +166,7 @@ const headers = [
         <p class="font-semibold text-base">{{ summary.converted }}</p>
       </div>
     </div>
-    <div class="bg-[#cc289b] text-white flex gap-3 px-5 py-5 rounded-xl">
+    <div class="bg-[#aa15af] text-white flex gap-3 px-5 py-5 rounded-xl">
       <div class="my-auto">
         <Clock />
       </div>

@@ -97,11 +97,6 @@ const headers = [
   { text: 'Actions', value: 'number' },
 ]
 
-const totalLeads = computed(() => leads.value.length)
-const pendingCalls = computed(
-  () => leads.value.filter((l) => l.status?.name?.toLowerCase().includes('pending')).length,
-)
-
 onMounted(async () => {
   try {
     const [leadRes, userRes, statusRes, branchRes, eventRes, typeRes, assignRes, countryRes] =
@@ -153,6 +148,10 @@ const filteredLeads = computed(() => {
   })
 })
 
+const totalLeads = computed(() => filteredLeads.value.length)
+const pendingCalls = computed(
+  () => filteredLeads.value.filter((l) => l.status?.name?.toLowerCase().includes('pending')).length,
+)
 const leadsWithAging = computed(() => {
   const today = new Date()
   return filteredLeads.value.map((lead) => {
