@@ -125,15 +125,6 @@ const headers = [
   </div>
 
   <div class="grid mb-5 grid-cols-4 gap-5">
-    <div class="bg-[#19a099] text-white flex gap-3 px-5 py-5 rounded-xl">
-      <div class="my-auto">
-        <Users />
-      </div>
-      <div>
-        <p class="text-base">Total Leads</p>
-        <p class="font-semibold text-base">{{ summary.total }}</p>
-      </div>
-    </div>
     <div class="bg-[#5853E9] text-white flex gap-3 px-5 py-5 rounded-xl">
       <div class="my-auto">
         <Users />

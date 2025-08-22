@@ -162,6 +162,9 @@ const leadsWithAging = computed(() => {
     return {
       ...lead,
       aging: diffDays,
+      is_new: lead.assigned_at
+        ? new Date(lead.assigned_at) > new Date(Date.now() - 24 * 60 * 60 * 1000)
+        : false,
     }
   })
 })
@@ -319,13 +322,13 @@ const addManagerNote = async () => {
               style="width: 100px; height: 80px"
             />
           </template>
-          <template #item-status_details="{ status, id }">
+          <template #item-status_details="{ status, id, is_new }">
             <div
-              class="cursor-pointer"
+              class="cursor-pointer flex gap-2 items-start"
               @click="openStatusModal(filteredLeads.find((l) => l.id === id))"
             >
               <strong
-                class="rounded-2xl p-1"
+                class="rounded-2xl text-[10px] p-1"
                 :style="{
                   color: status?.color_code,
                   border: `1px solid ${status?.color_code}`,
@@ -333,6 +336,10 @@ const addManagerNote = async () => {
               >
                 {{ status?.name }}
               </strong>
+
+              <div v-if="is_new">
+                <img class="w-7 h-7" alt="new" src="../../assets/new4.png" />
+              </div>
               <br />
             </div>
           </template>

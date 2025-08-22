@@ -20,6 +20,8 @@ async function submit() {
     const response = await api.post('/login', form)
     if (response.data.status === 'success') {
       globalState.userId = response.data.user.id
+      globalState.userRole = response.data.user.role_id
+
       window.location.href = '/'
     } else {
       console.error('Login failed:', response.data.message)
