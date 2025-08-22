@@ -13,6 +13,7 @@ import EventList from '@/components/Settings/EventList.vue'
 import CountryList from '@/components/Settings/CountryList.vue'
 import LeadAssign from '@/components/Lead/LeadAssign.vue'
 import UserList from '@/components/User/UserList.vue'
+import UploadLead from '@/components/Lead/UploadLead.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,6 +46,11 @@ const router = createRouter({
           path: 'lead-assign',
           name: 'Lead Assign',
           component: LeadAssign,
+        },
+        {
+          path: 'upload-lead',
+          name: 'Upload Lead',
+          component: UploadLead,
         },
         {
           path: 'status',

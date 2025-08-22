@@ -114,6 +114,7 @@ const menuItems = [
     children: [
       { label: 'All Lead', to: '/lead' },
       { label: 'Lead Assign Operation', to: '/lead-assign' },
+      { label: 'Lead Uploads Operation', to: '/upload-lead' },
     ],
   },
 
