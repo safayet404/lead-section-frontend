@@ -24,6 +24,7 @@ const chartCanvas = ref(null) // bind to <canvas>
 let chartInstance = null
 
 const range = ref('week')
+const leadType = ref('all')
 
 async function fetchBranchData() {
   loading.value = true
@@ -32,8 +33,9 @@ async function fetchBranchData() {
   try {
     const payload = {
       range: range.value,
+      lead_type: leadType.value,
     }
-    const res = await api.get('/summary', payload)
+    const res = await api.get('/summary', { params: payload })
     summary.value = res.data.summary
     perCounsellorRaw.value = res.data?.perCounsellor ?? []
     weeklyTrend.value = res.data?.trend ?? []
@@ -78,6 +80,8 @@ async function fetchBranchData() {
   }
 }
 
+const themeColor = ''
+
 onMounted(() => {
   fetchBranchData()
 })
@@ -94,17 +98,30 @@ const headers = [
 
 <template>
   <h1 class="text-xl font-semibold">Branch Manager Report</h1>
-  <div>
-    <select
-      v-model="range"
-      @change="fetchBranchData"
-      class="border px-3 py-2 rounded-lg w-2/6 mb-4 border-gray-300 mt-5"
-    >
-      <option value="week">Weekly Report</option>
-      <option value="month">Monthly Report</option>
-      <option value="year">Yearly Report</option>
-      <option value="all">All Report</option>
-    </select>
+  <div class="flex justify-between">
+    <div>
+      <select
+        v-model="range"
+        @change="fetchBranchData"
+        class="border px-3 py-2 w-md rounded-lg mb-4 border-gray-300 mt-5"
+      >
+        <option value="week">Weekly Report</option>
+        <option value="month">Monthly Report</option>
+        <option value="year">Yearly Report</option>
+        <option value="all">All Report</option>
+      </select>
+    </div>
+    <div>
+      <select
+        v-model="leadType"
+        @change="fetchBranchData"
+        class="border px-3 py-2 rounded-lg mb-4 border-gray-300 mt-5"
+      >
+        <option value="all">All</option>
+        <option value="1">Social</option>
+        <option value="2">Events</option>
+      </select>
+    </div>
   </div>
 
   <div class="grid mb-5 grid-cols-4 gap-5">
@@ -169,8 +186,6 @@ const headers = [
   <EasyDataTable
     :headers="headers"
     :items="perCounsellorRaw"
-    :search-field="searchField"
-    :search-value="searchValue"
     :theme-color="themeColor"
     buttons-pagination
     :loading="loading"
