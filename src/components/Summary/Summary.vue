@@ -159,7 +159,7 @@ const headers = [
       </div>
 
       <div>
-        <p class="text-base">Converted Leads</p>
+        <p class="text-base">Converted To Student</p>
         <p class="font-semibold text-base">{{ summary.converted }}</p>
       </div>
     </div>

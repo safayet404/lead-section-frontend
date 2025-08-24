@@ -35,6 +35,9 @@ const fetchData = async () => {
     const branchRes = await api.get('/branch-list')
 
     data.value = response?.data?.list || []
+
+    console.log('d', data.value)
+
     roles.value = roleRes?.data?.list || []
     branches.value = branchRes?.data?.list || []
   } catch (err) {
@@ -160,17 +163,17 @@ const handleEntitySubmission = async () => {
 
 <template>
   <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 bg-white p-4 shadow">
-    <select v-model="role" class="w-full border border-gray-300 rounded p-2 mt-5">
+    <select v-model="selectedRole" class="w-full border border-gray-300 rounded p-2 mt-5">
       <option value="">Select Roles</option>
       <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
     </select>
-    <select v-model="parent" class="w-full border-gray-300 border rounded p-2 mt-5">
+    <select v-model="selectedParent" class="w-full border-gray-300 border rounded p-2 mt-5">
       <option value="">Select Parent</option>
       <option v-for="u in data" :key="u.id" :value="u.id">{{ u.name }}</option>
     </select>
-    <select v-model="branch" class="w-full border border-gray-300 rounded p-2 mt-5">
+    <select v-model="selectedBranch" class="w-full border border-gray-300 rounded p-2 mt-5">
       <option value="">Select Branch</option>
-      <option v-for="u in branches" :key="u.id" :value="u.id">{{ u.name }}</option>
+      <option v-for="b in branches" :key="b.id" :value="b.id">{{ b.name }}</option>
     </select>
   </div>
 
