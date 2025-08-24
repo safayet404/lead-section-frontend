@@ -173,6 +173,7 @@ const headers = [
       </div>
     </div>
   </div>
+  <h1 class="mt-2 mb-3 text-lg font-semibold">Current Holding Leads</h1>
 
   <EasyDataTable
     :headers="headers"

@@ -103,7 +103,7 @@ const opeEditModal = (entity) => {
 const resetModalState = () => {
   entityName.value = ''
   entityEditing.value = null
-  modalTitle.value = 'Add New Status'
+  modalTitle.value = 'Add New User'
 }
 
 const handleEntitySubmission = async () => {
@@ -199,6 +199,8 @@ const handleEntitySubmission = async () => {
       </div>
     </div>
 
+    <h1>Current Holding Leads</h1>
+
     <EasyDataTable
       buttons-pagination
       alternating
@@ -226,7 +228,7 @@ const handleEntitySubmission = async () => {
         v-if="showModal"
         class="fixed top-0 left-0 w-[100%] h-[100%] flex justify-center items-center z-50 bg-black/50"
       >
-        <div class="bg-white rounded p-4 w-[500px] shadow-2xl relative">
+        <div class="bg-white rounded p-4 w-[800px] shadow-2xl relative">
           <h1 class="font-semibold">{{ modalTitle }}</h1>
           <button
             @click="closeModal"
@@ -236,40 +238,48 @@ const handleEntitySubmission = async () => {
           </button>
 
           <form @submit.prevent="handleEntitySubmission">
-            <input
-              v-model="entityName"
-              class="mt-5 border w-full rounded p-2 border-gray-500"
-              placeholder="Enter the status name"
-            />
-            <input
-              v-model="email"
-              class="mt-5 border w-full rounded p-2 border-gray-500"
-              type="email"
-              placeholder="Enter the email"
-            />
-            <input
-              v-model="mobile"
-              class="mt-5 border w-full rounded p-2 border-gray-500"
-              placeholder="Enter the mobile"
-            />
+            <div class="flex gap-5">
+              <input
+                v-model="entityName"
+                class="mt-5 border w-full rounded p-2 border-gray-500"
+                placeholder="Enter the User name"
+              />
+              <input
+                v-model="email"
+                class="mt-5 border w-full rounded p-2 border-gray-500"
+                type="email"
+                placeholder="Enter the email"
+              />
+            </div>
 
-            <input
-              v-model="password"
-              type="password"
-              class="mt-5 border w-full rounded p-2 border-gray-500"
-              placeholder="Enter the color code"
-            />
+            <div class="flex gap-5">
+              <input
+                v-model="mobile"
+                class="mt-5 border w-full rounded p-2 border-gray-500"
+                placeholder="Enter the mobile"
+              />
 
-            <select v-model="role" class="w-full border rounded p-2 mt-5">
-              <option value="">Select Roles</option>
-              <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
-            </select>
-            <select v-model="parent" class="w-full border rounded p-2 mt-5">
-              <option value="">Select Parent</option>
-              <option v-for="u in data" :key="u.id" :value="u.id">
-                {{ u.name }} - ({{ u.branch.name }}) - {{ u.role.name }}
-              </option>
-            </select>
+              <input
+                v-model="password"
+                type="password"
+                class="mt-5 border w-full rounded p-2 border-gray-500"
+                placeholder="Enter the password"
+              />
+            </div>
+
+            <div class="flex gap-5">
+              <select v-model="role" class="w-full border rounded p-2 mt-5">
+                <option value="">Select Roles</option>
+                <option v-for="r in roles" :key="r.id" :value="r.id">{{ r.name }}</option>
+              </select>
+              <select v-model="parent" class="w-full border rounded p-2 mt-5">
+                <option value="">Select Parent</option>
+                <option v-for="u in data" :key="u.id" :value="u.id">
+                  {{ u.name }} - ({{ u.branch.name }}) - {{ u.role.name }}
+                </option>
+              </select>
+            </div>
+
             <select v-model="branch" class="w-full border rounded p-2 mt-5">
               <option value="">Select Branch</option>
               <option v-for="u in branches" :key="u.id" :value="u.id">{{ u.name }}</option>
@@ -280,7 +290,7 @@ const handleEntitySubmission = async () => {
                 type="submit"
                 class="bg-[#AD46FF] py-2 px-4 rounded-lg text-white cursor-pointer"
               >
-                {{ entityEditing ? 'Save Changes' : 'Add' }}
+                {{ entityEditing ? 'Save Changes' : 'Add User' }}
               </button>
             </div>
           </form>
