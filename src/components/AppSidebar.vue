@@ -138,6 +138,11 @@ const menuItems = [
     icon: Users,
     to: '/user',
   },
+  {
+    label: 'Express Application',
+    icon: Users,
+    to: '/express-application',
+  },
 ]
 </script>
 

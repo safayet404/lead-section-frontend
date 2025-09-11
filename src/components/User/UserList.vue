@@ -199,8 +199,6 @@ const handleEntitySubmission = async () => {
       </div>
     </div>
 
-    <h1>Current Holding Leads</h1>
-
     <EasyDataTable
       buttons-pagination
       alternating
