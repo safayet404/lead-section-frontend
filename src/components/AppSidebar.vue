@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <aside
       :class="[
-        'min-h-screen fixed  bg-[#2F3349] text-white transition-all duration-300',
+        'min-h-screen sticky  bg-[#2F3349] text-white transition-all duration-300',
         isOpen ? 'w-64' : 'w-16',
       ]"
     >
@@ -142,6 +142,11 @@ const menuItems = [
     label: 'Express Application',
     icon: Users,
     to: '/express-application',
+  },
+  {
+    label: 'Express Application List',
+    icon: Users,
+    to: '/express-list',
   },
 ]
 </script>
