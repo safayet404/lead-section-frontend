@@ -3,7 +3,7 @@
     <!-- Sidebar -->
     <aside
       :class="[
-        'min-h-screen  bg-[#2F3349] text-white transition-all duration-300',
+        'min-h-screen fixed  bg-[#2F3349] text-white transition-all duration-300',
         isOpen ? 'w-64' : 'w-16',
       ]"
     >
