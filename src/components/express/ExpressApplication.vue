@@ -1,6 +1,9 @@
 <script setup>
 import logo from '@/assets/sg-logo.png'
+import api from '@/lib/api'
+import { createToaster } from '@meforma/vue-toaster'
 import { ref } from 'vue'
+const toast = createToaster()
 
 const countries = [
   { code: 'BD', name: 'Bangladesh', flag: '🇧🇩', code: '+880' },
@@ -10,29 +13,77 @@ const countries = [
   { code: 'AU', name: 'Australia', flag: '🇦🇺', code: '+1' },
 ]
 
-const phoneCodes = [
-  { code: '+880', country: 'BD', flag: '🇧🇩' },
-  { code: '+1', country: 'US', flag: '🇺🇸' },
-  { code: '+44', country: 'UK', flag: '🇬🇧' },
-  { code: '+1', country: 'CA', flag: '🇨🇦' },
-]
+const form = ref({
+  full_name: '',
+  email: '',
+  country_of_residence: '',
+  whatsapp_number: '',
+  country_to_apply: '',
+  intake: '',
+  course_type: '',
+  university: '',
+  course: '',
+})
+
+const resetForm = () => {
+  // reset text fields
+  form.value = {
+    full_name: '',
+    email: '',
+    country_of_residence: '',
+    whatsapp_number: '',
+    country_to_apply: '',
+    intake: '',
+    course_type: '',
+    university: '',
+    course: '',
+  }
+  // reset files
+  selectedFiles.value = []
+  if (fileInput.value) fileInput.value.value = null
+}
 
 const fileInput = ref(null)
-
-// A reactive variable to store the selected files
 const selectedFiles = ref([])
 
-// Method to programmatically trigger a click on the hidden file input
 const openFilePicker = () => {
   if (fileInput.value) {
     fileInput.value.click()
   }
 }
 
-// Method to handle the change event when files are selected
 const handleFileChange = (event) => {
-  // Get the selected files from the event object
   selectedFiles.value = Array.from(event.target.files)
+}
+
+const submitApplication = async () => {
+  try {
+    const formData = new FormData()
+
+    // append form fields
+    Object.keys(form.value).forEach((key) => {
+      formData.append(key, form.value[key])
+    })
+
+    // append files
+    selectedFiles.value.forEach((file) => {
+      formData.append('files[]', file)
+    })
+
+    const res = await api.post('/express-application', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+
+    if (res.status == 201) {
+      alert('✅ Application submitted successfully!')
+      resetForm()
+    }
+
+    console.log(res.data)
+  } catch (error) {
+    console.error(error.response?.data || error.message)
+    alert('❌ Failed to submit application')
+  }
 }
 </script>
 
@@ -48,8 +99,8 @@ const handleFileChange = (event) => {
   >
     <div class="max-w-5xl rounded-2xl p-10 mx-auto">
       <div>
+        <!-- Header -->
         <div class="mx-auto bg-[#7F41EF] rounded-t-xl overflow-hidden text-center relative">
-          <!-- Box/Grid pattern overlay -->
           <div
             class="absolute inset-0 opacity-10"
             style="
@@ -67,142 +118,134 @@ const handleFileChange = (event) => {
           </div>
         </div>
 
-        <form class="bg-white p-5">
+        <!-- Form -->
+        <form class="bg-white p-5" @submit.prevent="submitApplication">
           <!-- Personal Info -->
           <div class="rounded-lg border p-4 border-gray-300">
             <h1 class="text-xl border-b border-gray-300 font-medium pb-2">Personal Information</h1>
 
             <div class="mt-5">
               <label class="block text-sm mb-2">Full Name</label>
-              <div>
-                <input
-                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                  placeholder="Enter you full name here"
-                />
-              </div>
+              <input
+                v-model="form.full_name"
+                class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                placeholder="Enter your full name here"
+              />
             </div>
 
             <div class="flex justify-between gap-4">
               <div class="mt-5 w-full">
                 <label class="block text-sm mb-2">Email Address</label>
-                <div>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    placeholder="your-mail@example.com"
-                  />
-                </div>
+                <input
+                  v-model="form.email"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  placeholder="your-mail@example.com"
+                />
               </div>
 
               <div class="mt-5 w-full">
                 <label class="block text-sm mb-2">Country of Residence</label>
-                <div>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    list="country-list"
-                    placeholder="Select the country"
-                  />
-
-                  <datalist id="country-list">
-                    <option v-for="c in countries" :key="c.code" :value="c.name">
-                      {{ c.name }}
-                    </option>
-                  </datalist>
-                </div>
+                <input
+                  v-model="form.country_of_residence"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  list="country-list"
+                  placeholder="Select the country"
+                />
+                <datalist id="country-list">
+                  <option v-for="c in countries" :key="c.code" :value="c.name">
+                    {{ c.name }}
+                  </option>
+                </datalist>
               </div>
             </div>
 
             <div class="mt-5 w-full">
               <label class="block text-sm mb-2">WhatsApp Number</label>
-              <div>
-                <div class="flex gap-3">
-                  <select
-                    class="border w-28 rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                  >
-                    <option v-for="c in countries">{{ c.flag }} {{ c.code }}</option>
-                  </select>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    placeholder="Enter your valid whatsapp number"
-                  />
-                </div>
+              <div class="flex gap-3">
+                <select
+                  class="border w-28 rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                >
+                  <option v-for="c in countries" :key="c.code">{{ c.flag }} {{ c.code }}</option>
+                </select>
+                <input
+                  v-model="form.whatsapp_number"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  placeholder="Enter your valid WhatsApp number"
+                />
               </div>
             </div>
           </div>
-          <!-- Academic Field -->
+
+          <!-- Academic Preference -->
           <div class="rounded-lg border p-4 border-gray-300 mt-5">
             <h1 class="text-xl border-b border-gray-300 font-medium pb-2">Academic Preference</h1>
 
             <div class="flex justify-between gap-4">
               <div class="mt-5 w-1/2">
                 <label class="block text-sm mb-2">Country to Apply</label>
-                <div>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    placeholder="Enter the destination country"
-                  />
-                </div>
+                <input
+                  v-model="form.country_to_apply"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  placeholder="Enter the destination country"
+                />
               </div>
 
               <div class="mt-5 w-1/2">
                 <label class="block text-sm mb-2">Intake Period</label>
-                <div>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    placeholder="Enter intake period(e.g. Fall 2025,Spring 2026)"
-                  />
-                </div>
+                <input
+                  v-model="form.intake"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  placeholder="Enter intake period (e.g. Fall 2025, Spring 2026)"
+                />
               </div>
             </div>
 
             <div class="flex justify-between gap-4">
               <div class="mt-5 w-full">
                 <label class="block text-sm mb-2">Course Type</label>
-                <div>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    placeholder="Select the country"
-                  />
-                </div>
+                <input
+                  v-model="form.course_type"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  placeholder="Enter course type"
+                />
               </div>
 
               <div class="mt-5 w-full">
                 <label class="block text-sm mb-2">University</label>
-                <div>
-                  <input
-                    class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                    placeholder="Enter the university name"
-                  />
-                </div>
+                <input
+                  v-model="form.university"
+                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                  placeholder="Enter the university name"
+                />
               </div>
             </div>
 
             <div class="mt-5 w-full">
               <label class="block text-sm mb-2">Course Name</label>
-              <div>
-                <input
-                  class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
-                  placeholder="Enter the course name"
-                />
-              </div>
+              <input
+                v-model="form.course"
+                class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
+                placeholder="Enter the course name"
+              />
             </div>
           </div>
-          <!-- Documents -->
 
+          <!-- Required Documents -->
           <div class="rounded-lg border p-4 mt-5 border-gray-300">
             <h1 class="text-xl border-b border-gray-300 font-medium pb-2">Required Documents</h1>
 
             <div class="p-4 rounded-lg bg-[#D6F4F7] mt-5">
               <ul class="list-disc ml-3 text-[#00BAD0] space-y-4">
                 <li>
-                  <span class="font-semibold"> Passport Copy :</span> Clear scan of your passport's
+                  <span class="font-semibold"> Passport Copy:</span> Clear scan of your passport's
                   main identification page
                 </li>
                 <li>
-                  <span class="font-semibold"> Academic Transcripts :</span>Official transcripts
+                  <span class="font-semibold"> Academic Transcripts:</span> Official transcripts
                   from all previous educational institutions
                 </li>
                 <li>
-                  <span class="font-semibold">English Proficiency :</span> IELTS, TOEFL, PTE, or
+                  <span class="font-semibold"> English Proficiency:</span> IELTS, TOEFL, PTE, or
                   equivalent test results
                 </li>
               </ul>
@@ -250,11 +293,16 @@ const handleFileChange = (event) => {
             </div>
           </div>
 
+          <!-- Buttons -->
           <div class="flex gap-3 mx-auto justify-center mt-5">
-            <button class="bg-purple-700 text-white px-5 py-3 rounded-lg font-semibold">
+            <button
+              type="submit"
+              class="bg-purple-700 text-white px-5 py-3 rounded-lg font-semibold"
+            >
               Submit Application
             </button>
             <button
+              type="reset"
               class="border border-purple-700 text-purple-700 px-5 py-3 rounded-lg font-semibold"
             >
               Reset Form
