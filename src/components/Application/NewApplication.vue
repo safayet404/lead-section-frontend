@@ -1,6 +1,7 @@
 <script setup>
 import api from '@/lib/api'
 import { onMounted, ref, watch } from 'vue'
+import Information from './Information.vue'
 
 const countreis = ref([])
 const intakes = ref([])
@@ -9,13 +10,25 @@ const courseTypes = ref([])
 const courses = ref([])
 
 const selectedCountry = ref('')
+const selectedPassportCountry = ref('')
 const selectedIntake = ref('')
 const selectedUniversity = ref('')
 const selectedCourseType = ref('')
 const selectedCourse = ref('')
 
+// Validation errors
+const errors = ref({
+  country: '',
+  passportCountry: '',
+  intake: '',
+  courseType: '',
+  university: '',
+  course: '',
+})
+
 const loading = ref({
   contries: false,
+  passportCountry: false,
   intakes: false,
   universities: false,
   courseTypes: false,
@@ -64,7 +77,6 @@ const fetchUniversities = async (countryId, intakeId, courseTypeId) => {
     loading.value.universities = false
   }
 }
-
 const fetchCourses = async (countryId, intakeId, universityId, courseTypeId) => {
   loading.value.courses = true
   try {
@@ -85,124 +97,174 @@ watch(selectedCountry, (val) => {
     selectedCourse.value =
       ''
   intakes.value = universities.value = courseTypes.value = courses.value = []
-  if (val) fetchIntakes(val)
+  errors.value.country = '' // reset error
+  if (val) fetchIntakes(val.id)
 })
-
-// After selecting intake → fetch Course Types
 watch(selectedIntake, (val) => {
   selectedCourseType.value = selectedUniversity.value = selectedCourse.value = ''
   courseTypes.value = universities.value = courses.value = []
-  if (val && selectedCountry.value) fetchCourseTypes(selectedCountry.value, val)
+  errors.value.intake = '' // reset error
+  if (val && selectedCountry.value) fetchCourseTypes(selectedCountry.value.id, val.id)
 })
-
-// After selecting course type → fetch Universities
 watch(selectedCourseType, (val) => {
   selectedUniversity.value = selectedCourse.value = ''
   universities.value = courses.value = []
+  errors.value.courseType = '' // reset error
   if (val && selectedCountry.value && selectedIntake.value)
-    fetchUniversities(selectedCountry.value, selectedIntake.value, val)
+    fetchUniversities(selectedCountry.value.id, selectedIntake.value.id, val.id)
 })
-
-// After selecting university → fetch Courses
 watch(selectedUniversity, (val) => {
   selectedCourse.value = ''
   courses.value = []
+  errors.value.university = '' // reset error
   if (val && selectedCountry.value && selectedIntake.value && selectedCourseType.value)
-    fetchCourses(selectedCountry.value, selectedIntake.value, val, selectedCourseType.value)
+    fetchCourses(
+      selectedCountry.value.id,
+      selectedIntake.value.id,
+      val.id,
+      selectedCourseType.value.id,
+    )
+})
+watch(selectedCourse, () => {
+  errors.value.course = '' // reset error
 })
 
 onMounted(() => {
   fetchCountries()
 })
+
+const formValid = ref(false)
+
+const validateForm = () => {
+  errors.value = {
+    country: selectedCountry.value ? '' : 'Please select a country',
+    passportCountry: selectedPassportCountry.value ? '' : 'Please select your residence country',
+    intake: selectedIntake.value ? '' : 'Please select an intake',
+    courseType: selectedCourseType.value ? '' : 'Please select a course type',
+    university: selectedUniversity.value ? '' : 'Please select a university',
+    course: selectedCourse.value ? '' : 'Please select a course',
+  }
+
+  // check if all errors are empty
+  const valid = Object.values(errors.value).every((v) => v === '')
+
+  if (valid) {
+    formValid.value = true
+  } else {
+    formValid.value = false
+  }
+}
+const handleNext = () => {
+  if (validateForm()) {
+    alert('Form is valid. Proceed to next step 🚀')
+  }
+}
 </script>
 
 <template>
-  <div class="container mx-auto p-4 rounded-2xl border border-gray-100 mt-10 shadow-2xl">
-    <h1 class="text-lg">New Application</h1>
+  <div v-if="!formValid">
+    <div class="container mx-auto p-4 rounded-2xl border border-gray-100 mt-10 shadow-2xl">
+      <h1 class="text-lg">New Application</h1>
 
-    <div class="flex justify-between gap-8 mt-10">
-      <div class="w-full">
-        <label>Country to Apply</label>
-        <div>
+      <!-- Country -->
+      <div class="flex justify-between gap-8 mt-10">
+        <div class="w-full">
+          <label>Country to Apply</label>
           <select
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
             v-model="selectedCountry"
           >
             <option value="">Select Country</option>
-            <option v-for="c in countreis" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option v-for="c in countreis" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
+          <p v-if="errors.country" class="text-red-500 text-sm mt-1">{{ errors.country }}</p>
         </div>
-      </div>
 
-      <div class="w-full">
-        <label>Country of Student Passport</label>
-        <div>
+        <div class="w-full">
+          <label>Country of Student Passport</label>
           <select
+            v-model="selectedPassportCountry"
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
           >
             <option value="">Select Country</option>
-            <option v-for="c in countreis" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option v-for="c in countreis" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
         </div>
       </div>
-    </div>
 
-    <div class="flex justify-between gap-8 mt-10">
-      <div class="w-full">
-        <label>Intake</label>
-        <div>
+      <!-- Intake + Course Type -->
+      <div class="flex justify-between gap-8 mt-10">
+        <div class="w-full">
+          <label>Intake</label>
           <select
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
             v-model="selectedIntake"
           >
             <option value="">Select Intake</option>
-            <option v-for="c in intakes" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option v-for="c in intakes" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
+          <p v-if="errors.intake" class="text-red-500 text-sm mt-1">{{ errors.intake }}</p>
         </div>
-      </div>
 
-      <div class="w-full">
-        <label>Course Type</label>
-        <div>
+        <div class="w-full">
+          <label>Course Type</label>
           <select
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
             v-model="selectedCourseType"
           >
             <option value="">Select Course Type</option>
-            <option v-for="c in courseTypes" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option v-for="c in courseTypes" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
+          <p v-if="errors.courseType" class="text-red-500 text-sm mt-1">{{ errors.courseType }}</p>
         </div>
       </div>
-    </div>
 
-    <div class="flex justify-between gap-8 mt-10">
-      <div class="w-full">
-        <label>Univesity</label>
-        <div>
+      <!-- University + Course -->
+      <div class="flex justify-between gap-8 mt-10">
+        <div class="w-full">
+          <label>University</label>
           <select
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
             v-model="selectedUniversity"
           >
-            <option value="">Select Course Type</option>
-            <option v-for="c in universities" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option value="">Select University</option>
+            <option v-for="c in universities" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
+          <p v-if="errors.university" class="text-red-500 text-sm mt-1">{{ errors.university }}</p>
         </div>
-      </div>
 
-      <div class="w-full">
-        <label>Course</label>
-        <div>
+        <div class="w-full">
+          <label>Course</label>
           <select
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
             v-model="selectedCourse"
           >
             <option value="">Select Course</option>
-            <option v-for="c in courses" :key="c.id" :value="c.id">{{ c.name }}</option>
+            <option v-for="c in courses" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
+          <p v-if="errors.course" class="text-red-500 text-sm mt-1">{{ errors.course }}</p>
         </div>
+      </div>
+
+      <!-- Next Button -->
+      <div class="flex justify-end">
+        <button
+          class="px-4 py-2 bg-purple-700 rounded mt-5 text-white font-medium"
+          @click="handleNext"
+        >
+          Next
+        </button>
       </div>
     </div>
   </div>
+  <div v-else>
+    <Information
+      :country="selectedCountry"
+      :passportCountry="selectedPassportCountry"
+      :intake="selectedIntake"
+      :course-type="selectedCourseType"
+      :university="selectedUniversity"
+      :course="selectedCourse"
+    />
+  </div>
 </template>
-
-<style scoped></style>
