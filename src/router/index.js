@@ -16,6 +16,7 @@ import UserList from '@/components/User/UserList.vue'
 import UploadLead from '@/components/Lead/UploadLead.vue'
 import ExpressApplication from '@/components/Express/ExpressApplication.vue'
 import ExpressApplicationList from '@/components/Express/ExpressApplicationList.vue'
+import NewApplication from '@/components/Application/NewApplication.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -88,6 +89,11 @@ const router = createRouter({
           path: 'express-list',
           name: 'Express-List',
           component: ExpressApplicationList,
+        },
+        {
+          path: 'new-application',
+          name: 'New-Application',
+          component: NewApplication,
         },
       ],
     },

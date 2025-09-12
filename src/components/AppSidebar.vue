@@ -148,6 +148,11 @@ const menuItems = [
     icon: Users,
     to: '/express-list',
   },
+  {
+    label: 'New Application',
+    icon: Users,
+    to: '/new-application',
+  },
 ]
 </script>
 
