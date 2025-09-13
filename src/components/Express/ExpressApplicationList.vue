@@ -51,12 +51,7 @@ const Header = [
         <span class="text-sm text-gray-500">{{ course }} - {{ intake }}</span>
       </div>
     </template>
-    <template #item-status="{}">
-      <div>
-        <strong>pending</strong><br />
-        <span class="text-sm text-gray-500">{{ course }} - {{ intake }}</span>
-      </div>
-    </template>
+
     <template #item-date="{ created_at }">
       <div>
         <span class="text-[#FFA90C] text-sm">{{
