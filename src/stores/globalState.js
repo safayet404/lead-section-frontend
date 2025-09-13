@@ -11,7 +11,6 @@ export const globalState = reactive({
   userRole: savedUserRole || null,
 })
 
-// Watch for changes and update sessionStorage
 watch(
   () => ({ userId: globalState.userId, userRole: globalState.userRole }),
   ({ userId, userRole }) => {

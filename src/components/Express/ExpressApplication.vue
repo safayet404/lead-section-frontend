@@ -138,6 +138,7 @@ const submitApplication = async () => {
                 <label class="block text-sm mb-2">Email Address</label>
                 <input
                   v-model="form.email"
+                  type="email"
                   class="border w-full rounded-md border-gray-300 p-2 focus:outline-none focus:border-purple-700"
                   placeholder="your-mail@example.com"
                 />

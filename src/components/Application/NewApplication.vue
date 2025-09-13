@@ -2,6 +2,11 @@
 import api from '@/lib/api'
 import { onMounted, ref, watch } from 'vue'
 import Information from './Information.vue'
+import Document from './Document.vue'
+import { useApplicationStore } from '@/stores/application'
+import StudentDetails from './StudentDetails.vue'
+
+const appStore = useApplicationStore()
 
 const countreis = ref([])
 const intakes = ref([])
@@ -134,6 +139,7 @@ onMounted(() => {
 })
 
 const formValid = ref(false)
+const step = ref(1)
 
 const validateForm = () => {
   errors.value = {
@@ -145,24 +151,17 @@ const validateForm = () => {
     course: selectedCourse.value ? '' : 'Please select a course',
   }
 
-  // check if all errors are empty
-  const valid = Object.values(errors.value).every((v) => v === '')
-
-  if (valid) {
-    formValid.value = true
-  } else {
-    formValid.value = false
-  }
+  return Object.values(errors.value).every((v) => v === '')
 }
 const handleNext = () => {
   if (validateForm()) {
-    alert('Form is valid. Proceed to next step 🚀')
+    step.value = 2
   }
 }
 </script>
 
 <template>
-  <div v-if="!formValid">
+  <div v-if="step === 1">
     <div class="container mx-auto p-4 rounded-2xl border border-gray-100 mt-10 shadow-2xl">
       <h1 class="text-lg">New Application</h1>
 
@@ -257,7 +256,7 @@ const handleNext = () => {
       </div>
     </div>
   </div>
-  <div v-else>
+  <div v-else-if="step === 2">
     <Information
       :country="selectedCountry"
       :passportCountry="selectedPassportCountry"
@@ -265,6 +264,32 @@ const handleNext = () => {
       :course-type="selectedCourseType"
       :university="selectedUniversity"
       :course="selectedCourse"
+      @back="step = 1"
+      @next="step = 3"
     />
   </div>
+
+  <Document
+    v-else-if="step === 3"
+    :country="selectedCountry"
+    :passportCountry="selectedPassportCountry"
+    :intake="selectedIntake"
+    :course-type="selectedCourseType"
+    :university="selectedUniversity"
+    :course="selectedCourse"
+    @back="step = 2"
+    @next="step = 4"
+  />
+
+  <StudentDetails
+    v-else-if="step === 4"
+    :country="selectedCountry"
+    :passportCountry="selectedPassportCountry"
+    :intake="selectedIntake"
+    :course-type="selectedCourseType"
+    :university="selectedUniversity"
+    :course="selectedCourse"
+    @back="step = 3"
+    @next="step = 5"
+  />
 </template>
