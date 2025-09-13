@@ -188,6 +188,9 @@ const handleNext = () => {
             <option value="">Select Country</option>
             <option v-for="c in countreis" :key="c.id" :value="c">{{ c.name }}</option>
           </select>
+          <p v-if="errors.passportCountry" class="text-red-500 text-sm mt-1">
+            {{ errors.passportCountry }}
+          </p>
         </div>
       </div>
 
