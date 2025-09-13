@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import CourseDetails from './CourseDetails.vue'
+import api from '@/lib/api'
 
 const props = defineProps({
   country: Object,
@@ -11,12 +12,47 @@ const props = defineProps({
   course: Object,
 })
 
-let activeTab = ref('academic')
+const student = ref({
+  first_name: '',
+  last_name: '',
+  email: '',
+  phone: '',
+  date_of_birth: '',
+  passport_number: '',
+  passport_country: props.passportCountry?.name || '',
+})
 
-let tab = [
-  { name: 'academic', label: 'Academic Requirement' },
-  { name: 'english', label: 'English Requirement' },
-]
+async function createApplication() {
+  try {
+    const payload = {
+      first_name: student.value.first_name,
+      last_name: student.value.last_name,
+      email: student.value.email,
+      phone: student.value.phone,
+      date_of_birth: student.value.date_of_birth,
+      passport_number: student.value.passport_number,
+      passport_country: student.value.passport_country,
+
+      country_id: props.country.id,
+      intake_id: props.intake.id,
+      course_type_id: props.courseType.id,
+      university_id: props.university.id,
+      course_id: props.course.id,
+      application_status_id: 1,
+    }
+
+    const res = await api.post('/student-application', payload)
+
+    console.log(res.data)
+
+    if (res.data.status == 'success') {
+      alert('✅ Application created successfully!')
+    }
+  } catch (error) {
+    console.log(error)
+    alert('❌ Something went wrong')
+  }
+}
 
 const emit = defineEmits(['back'])
 </script>
@@ -42,6 +78,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student Passport No.</label>
               <div>
                 <input
+                  v-model="student.passport_number"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="A093242"
                 />
@@ -51,6 +88,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Date of Birth</label>
               <div>
                 <input
+                  v-model="student.date_of_birth"
                   type="date"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="A093242"
@@ -63,6 +101,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student First Name</label>
               <div>
                 <input
+                  v-model="student.first_name"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="John"
                 />
@@ -72,6 +111,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student Last Name</label>
               <div>
                 <input
+                  v-model="student.last_name"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="Doe"
                 />
@@ -83,6 +123,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student WhatsApp Number</label>
               <div>
                 <input
+                  v-model="student.phone"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="+123343232290"
                 />
@@ -103,6 +144,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Enter Student Email</label>
               <div>
                 <input
+                  v-model="student.email"
                   type="email"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="student@example.com"
@@ -170,10 +212,10 @@ const emit = defineEmits(['back'])
             Back
           </button>
           <button
-            @click="emit('next')"
+            @click="createApplication"
             class="px-7 py-2 rounded bg-purple-600 text-white font-medium"
           >
-            Next
+            Submit
           </button>
         </div>
       </div>
