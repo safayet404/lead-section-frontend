@@ -37,12 +37,12 @@ const emit = defineEmits(['back'])
         <div class="border border-gray-200 p-4 rounded-xl shadow-2xl">
           <h1>Please enter student details to process this application</h1>
 
-          <div class="flex justify-between gap-4 mt-5">
+          <div class="flex justify-between gap-4 mt-5 space-y-2">
             <div class="w-full">
               <label class="text-sm">Student Passport No.</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="A093242"
                 />
               </div>
@@ -52,18 +52,18 @@ const emit = defineEmits(['back'])
               <div>
                 <input
                   type="date"
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="A093242"
                 />
               </div>
             </div>
           </div>
-          <div class="flex justify-between gap-4 mt-5">
+          <div class="flex justify-between gap-4 mt-5 space-y-2">
             <div class="w-full">
               <label class="text-sm">Student First Name</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="John"
                 />
               </div>
@@ -72,18 +72,18 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student Last Name</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="Doe"
                 />
               </div>
             </div>
           </div>
-          <div class="flex justify-between gap-4 mt-5">
+          <div class="flex justify-between gap-4 mt-5 space-y-2">
             <div class="w-full">
               <label class="text-sm">Student WhatsApp Number</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="+123343232290"
                 />
               </div>
@@ -92,19 +92,19 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Counsellor Number</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="+123343232290"
                 />
               </div>
             </div>
           </div>
-          <div class="flex justify-between gap-4 mt-5">
+          <div class="flex justify-between gap-4 mt-5 space-y-2">
             <div class="w-full">
               <label class="text-sm">Enter Student Email</label>
               <div>
                 <input
                   type="email"
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="student@example.com"
                 />
               </div>
@@ -114,18 +114,18 @@ const emit = defineEmits(['back'])
               <div>
                 <input
                   type="email"
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="counsellor@example.com"
                 />
               </div>
             </div>
           </div>
-          <div class="flex justify-between gap-4 mt-5">
+          <div class="flex justify-between gap-4 mt-5 space-y-2">
             <div class="w-full">
-              <label>Student Address</label>
+              <label class="text-sm">Student Address</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="Baker Street"
                 />
               </div>
@@ -134,18 +134,18 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student City</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="London"
                 />
               </div>
             </div>
           </div>
-          <div class="flex justify-between gap-4 mt-5">
+          <div class="flex justify-between gap-4 mt-5 space-y-2">
             <div class="w-1/2">
               <label class="text-sm">Student Country</label>
               <div>
                 <input
-                  class="border focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-1.5 rounded-lg"
+                  class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="Student Country"
                 />
               </div>
