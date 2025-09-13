@@ -2,6 +2,8 @@
 import { ref } from 'vue'
 import CourseDetails from './CourseDetails.vue'
 import api from '@/lib/api'
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
 const props = defineProps({
   country: Object,
@@ -20,6 +22,12 @@ const student = ref({
   date_of_birth: '',
   passport_number: '',
   passport_country: props.passportCountry?.name || '',
+  address: '',
+  city: '',
+  gender: 'male',
+  visa_refusal: 'no',
+  counsellor_phone: '',
+  counsellor_email: '',
 })
 
 async function createApplication() {
@@ -32,6 +40,10 @@ async function createApplication() {
       date_of_birth: student.value.date_of_birth,
       passport_number: student.value.passport_number,
       passport_country: student.value.passport_country,
+      address: student.value.address,
+      city: student.value.city,
+      gender: student.value.gender,
+      visa_refusal: student.value.visa_refusal,
 
       country_id: props.country.id,
       intake_id: props.intake.id,
@@ -39,6 +51,8 @@ async function createApplication() {
       university_id: props.university.id,
       course_id: props.course.id,
       application_status_id: 1,
+      counsellor_phone: student.value.counsellor_phone,
+      counsellor_email: student.value.counsellor_email,
     }
 
     const res = await api.post('/student-application', payload)
@@ -47,6 +61,23 @@ async function createApplication() {
 
     if (res.data.status == 'success') {
       alert('✅ Application created successfully!')
+      student.value = {
+        first_name: '',
+        last_name: '',
+        email: '',
+        phone: '',
+        date_of_birth: '',
+        passport_number: '',
+        passport_country: props.passportCountry?.name || '',
+        address: '',
+        city: '',
+        gender: 'male',
+        visa_refusal: 'no',
+        counsellor_phone: '',
+        counsellor_email: '',
+      }
+
+      router.push('/')
     }
   } catch (error) {
     console.log(error)
@@ -133,6 +164,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Counsellor Number</label>
               <div>
                 <input
+                  v-model="student.counsellor_phone"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="+123343232290"
                 />
@@ -156,6 +188,7 @@ const emit = defineEmits(['back'])
               <div>
                 <input
                   type="email"
+                  v-model="student.counsellor_email"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="counsellor@example.com"
                 />
@@ -167,6 +200,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student Address</label>
               <div>
                 <input
+                  v-model="student.address"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="Baker Street"
                 />
@@ -176,6 +210,7 @@ const emit = defineEmits(['back'])
               <label class="text-sm">Student City</label>
               <div>
                 <input
+                  v-model="student.city"
                   class="border text-sm focus:outline-none focus:border-purple-700 w-full border-gray-300 mt-1 p-2.5 rounded-lg"
                   placeholder="London"
                 />
@@ -196,13 +231,45 @@ const emit = defineEmits(['back'])
           <div class="flex justify-between mt-5 p-3 text-gray-500">
             <div class="space-y-2">
               <h1>Gender</h1>
-              <div><input class="accent-[#7367F0]" type="radio" /> Male</div>
-              <div><input class="accent-[#7367F0]" type="radio" /> Female</div>
+              <div>
+                <input
+                  class="accent-[#7367F0]"
+                  value="male"
+                  v-model="student.gender"
+                  type="radio"
+                />
+                Male
+              </div>
+              <div>
+                <input
+                  class="accent-[#7367F0]"
+                  value="female"
+                  v-model="student.gender"
+                  type="radio"
+                />
+                Female
+              </div>
             </div>
             <div class="space-y-2">
               <h1>Any Previous Visa Refusal</h1>
-              <div><input class="accent-[#7367F0]" type="radio" /> Yes</div>
-              <div><input class="accent-[#7367F0]" type="radio" /> No</div>
+              <div>
+                <input
+                  class="accent-[#7367F0]"
+                  value="yes"
+                  v-model="student.visa_refusal"
+                  type="radio"
+                />
+                Yes
+              </div>
+              <div>
+                <input
+                  class="accent-[#7367F0]"
+                  value="no"
+                  v-model="student.visa_refusal"
+                  type="radio"
+                />
+                No
+              </div>
             </div>
           </div>
         </div>
