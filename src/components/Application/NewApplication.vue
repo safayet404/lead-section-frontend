@@ -138,7 +138,8 @@ onMounted(() => {
   fetchCountries()
 })
 
-const formValid = ref(false)
+const files = ref([])
+
 const step = ref(1)
 
 const validateForm = () => {
@@ -282,6 +283,7 @@ const handleNext = () => {
     :course="selectedCourse"
     @back="step = 2"
     @next="step = 4"
+    @update:files="files = $event"
   />
 
   <StudentDetails
@@ -292,6 +294,7 @@ const handleNext = () => {
     :course-type="selectedCourseType"
     :university="selectedUniversity"
     :course="selectedCourse"
+    :files="files"
     @back="step = 3"
     @next="step = 5"
   />

@@ -11,7 +11,7 @@ const props = defineProps({
   course: Object,
 })
 
-const emit = defineEmits(['back'])
+const emit = defineEmits(['back', 'next', 'update:files'])
 
 const fileInput = ref(null)
 const selectedFiles = ref([])
@@ -24,6 +24,7 @@ const openFilePicker = () => {
 
 const handleFileChange = (event) => {
   selectedFiles.value = Array.from(event.target.files)
+  emit('update:files', selectedFiles.value)
 }
 </script>
 
