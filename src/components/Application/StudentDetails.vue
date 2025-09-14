@@ -13,6 +13,7 @@ const props = defineProps({
   university: Object,
   course: Object,
   files: Array,
+  channelPartner: Object,
 })
 
 console.log('files from step 3', props.files)
@@ -46,7 +47,7 @@ async function createApplication() {
     formData.append('course_type_id', props.courseType.id)
     formData.append('university_id', props.university.id)
     formData.append('course_id', props.course.id)
-    formData.append('application_status_id', 1)
+    formData.append('channel_partner_id', props.channelPartner.id)
 
     if (props.files && props.files.length > 0) {
       props.files.forEach((file, index) => {

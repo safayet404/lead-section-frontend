@@ -13,6 +13,7 @@ const intakes = ref([])
 const universities = ref([])
 const courseTypes = ref([])
 const courses = ref([])
+const channelPartner = ref([])
 
 const selectedCountry = ref('')
 const selectedPassportCountry = ref('')
@@ -20,6 +21,7 @@ const selectedIntake = ref('')
 const selectedUniversity = ref('')
 const selectedCourseType = ref('')
 const selectedCourse = ref('')
+const selectedChannelPartner = ref('')
 
 // Validation errors
 const errors = ref({
@@ -38,6 +40,7 @@ const loading = ref({
   universities: false,
   courseTypes: false,
   courses: false,
+  channelPartner: false,
 })
 
 const fetchCountries = async () => {
@@ -94,6 +97,16 @@ const fetchCourses = async (countryId, intakeId, universityId, courseTypeId) => 
     loading.value.courses = false
   }
 }
+const fetchChannelParatner = async () => {
+  loading.value.channelPartner = true
+  try {
+    channelPartner.value = (await api.get('/all-channel')).data
+  } catch (error) {
+    console.log(error)
+  } finally {
+    loading.value.channelPartner = false
+  }
+}
 
 watch(selectedCountry, (val) => {
   selectedIntake.value =
@@ -136,6 +149,7 @@ watch(selectedCourse, () => {
 
 onMounted(() => {
   fetchCountries()
+  fetchChannelParatner()
 })
 
 const files = ref([])
@@ -249,6 +263,19 @@ const handleNext = () => {
         </div>
       </div>
 
+      <div class="mt-10">
+        <label>Channel Partner</label>
+        <div>
+          <select
+            v-model="selectedChannelPartner"
+            class="border w-md border-gray-300 p-1.5 mt-1 rounded focus:outline-none focus:border-purple-700"
+          >
+            <option value="">Select Channel Partner</option>
+            <option v-for="c in channelPartner" :value="c" :key="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+      </div>
+
       <!-- Next Button -->
       <div class="flex justify-end">
         <button
@@ -295,6 +322,7 @@ const handleNext = () => {
     :university="selectedUniversity"
     :course="selectedCourse"
     :files="files"
+    :channelPartner="selectedChannelPartner"
     @back="step = 3"
     @next="step = 5"
   />
