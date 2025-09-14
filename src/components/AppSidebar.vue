@@ -153,6 +153,11 @@ const menuItems = [
     icon: Users,
     to: '/new-application',
   },
+  {
+    label: 'Application List',
+    icon: Users,
+    to: '/application-list',
+  },
 ]
 </script>
 

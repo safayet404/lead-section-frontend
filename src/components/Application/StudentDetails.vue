@@ -35,37 +35,12 @@ const student = ref({
 
 async function createApplication() {
   try {
-    // const payload = {
-    //   first_name: student.value.first_name,
-    //   last_name: student.value.last_name,
-    //   email: student.value.email,
-    //   phone: student.value.phone,
-    //   date_of_birth: student.value.date_of_birth,
-    //   passport_number: student.value.passport_number,
-    //   passport_country: student.value.passport_country,
-    //   address: student.value.address,
-    //   city: student.value.city,
-    //   gender: student.value.gender,
-    //   visa_refusal: student.value.visa_refusal,
-
-    //   country_id: props.country.id,
-    //   intake_id: props.intake.id,
-    //   course_type_id: props.courseType.id,
-    //   university_id: props.university.id,
-    //   course_id: props.course.id,
-    //   application_status_id: 1,
-    //   counsellor_phone: student.value.counsellor_phone,
-    //   counsellor_email: student.value.counsellor_email,
-    // }
-
     const formData = new FormData()
 
-    // append student details
     Object.entries(student.value).forEach(([key, value]) => {
       formData.append(key, value)
     })
 
-    // append props data (ids)
     formData.append('country_id', props.country.id)
     formData.append('intake_id', props.intake.id)
     formData.append('course_type_id', props.courseType.id)
@@ -73,7 +48,6 @@ async function createApplication() {
     formData.append('course_id', props.course.id)
     formData.append('application_status_id', 1)
 
-    // append files
     if (props.files && props.files.length > 0) {
       props.files.forEach((file, index) => {
         formData.append('files[]', file)
@@ -83,8 +57,6 @@ async function createApplication() {
     const res = await api.post('/student-application', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
-
-    // const res = await api.post('/student-application', payload)
 
     console.log(res.data)
 
