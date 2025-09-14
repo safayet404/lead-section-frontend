@@ -160,8 +160,14 @@ const handleEntitySubmission = async () => {
         </div>
       </template>
       <template #item-created-by="{ user, channel_partner }">
-        <p v-if="channel_partner">{{ channel_partner.name }}</p>
-        <p v-else>{{ user.name }}</p>
+        <p v-if="channel_partner">
+          {{ channel_partner.email }} <br />
+          {{ channel_partner.name }}
+        </p>
+        <p v-else>
+          {{ user.name }} <br />
+          {{ user.email }}
+        </p>
       </template>
 
       <template #item-created_at="{ created_at }">
