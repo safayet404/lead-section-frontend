@@ -6,6 +6,8 @@ import 'vue3-easy-data-table/dist/style.css'
 import { createToaster } from '@meforma/vue-toaster'
 import ApplicationDetails from './ApplicationDetails.vue'
 const toast = createToaster()
+import { Eye } from 'lucide-vue-next'
+
 const data = ref([])
 const loading = ref(true)
 const error = ref(null)
@@ -44,10 +46,11 @@ onMounted(() => {
 })
 
 const isModalOpen = ref(false)
-
+const applicationId = ref('')
 const modalDescription = ref('')
-function openModal() {
+function openModal(id) {
   isModalOpen.value = true
+  applicationId.value = id
 }
 </script>
 
@@ -113,16 +116,17 @@ function openModal() {
       </template>
       <template #item-number="{ id, name }">
         <button
-          @click="openModal('Product Details', 'This is the product details info')"
-          class="bg-red-700 my-2 px-4 py-2 rounded-lg text-white font-bold"
+          @click="openModal(id)"
+          class="bg-red-700 cursor-help my-2 px-2 rounded text-white font-bold"
         >
-          Edit
+          <Eye />
         </button>
       </template>
     </EasyDataTable>
 
     <ApplicationDetails
       :show="isModalOpen"
+      :applicationId="applicationId"
       :title="modalTitle"
       :description="modalDescription"
       :data="data"

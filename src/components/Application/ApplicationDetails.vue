@@ -16,10 +16,14 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
+  applicationId: {
+    type: String,
+  },
 })
 
 const activeTab = ref('student/course')
 const tabContainer = ref(null)
+console.log('application id', props.applicationId)
 
 const tab = [
   { name: 'student/course', label: 'Student/Course Details' },
