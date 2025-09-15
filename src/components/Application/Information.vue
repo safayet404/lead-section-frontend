@@ -40,7 +40,7 @@ const emit = defineEmits(['back'])
             :key="t.name"
             @click="activeTab = t.name"
             :class="[
-              'm-3 cursor-pointer ',
+              'm-3 border-b cursor-pointer ',
               activeTab === t.name ? 'border-b-2 border-purple-700 font-medium' : '',
             ]"
           >
