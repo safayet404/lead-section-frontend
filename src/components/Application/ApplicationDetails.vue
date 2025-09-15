@@ -1,5 +1,15 @@
 <script setup>
 import { ref, nextTick } from 'vue'
+import StudentCourseDetails from './Tabs/StudentCourseDetails.vue'
+import UniversityDetails from './Tabs/UniversityDetails.vue'
+import UploadDownload from './Tabs/UploadDownload.vue'
+import Status from './Tabs/Status.vue'
+import Comments from './Tabs/Comments.vue'
+import UniversityCommunication from './Tabs/UniversityCommunication.vue'
+import AoCommunication from './Tabs/AoCommunication.vue'
+import CoCommunication from './Tabs/CoCommunication.vue'
+import AssingAo from './Tabs/AssingAo.vue'
+import AssignCo from './Tabs/AssignCo.vue'
 
 const props = defineProps({
   show: {
@@ -50,7 +60,7 @@ const scrollTabs = (direction) => {
         </button>
       </div>
 
-      <div class="border border-gray-100 rounded-2xl shadow-2xl p-4 w-11/12 mx-auto mt-5">
+      <div class="border border-gray-100 rounded-2xl shadow-2xl p-4 w-11/12 h-auto mx-auto mt-5">
         <div class="flex border-b border-gray-200 items-center gap-2">
           <button @click="scrollTabs('left')" class="p-2 text-gray-500 hover:text-gray-900">
             &lt;
@@ -78,18 +88,42 @@ const scrollTabs = (direction) => {
             &gt;
           </button>
         </div>
+
+        <Transition name="fade" mode="out-in">
+          <div :key="activeTab">
+            <StudentCourseDetails v-if="activeTab === 'student/course'" />
+            <UniversityDetails v-else-if="activeTab === 'university'" />
+            <UploadDownload v-else-if="activeTab === 'upload'" />
+            <Status v-else-if="activeTab === 'status'" />
+            <Comments v-else-if="activeTab === 'comments'" />
+            <UniversityCommunication v-else-if="activeTab === 'university-communication'" />
+            <AoCommunication v-else-if="activeTab === 'ao-communication'" />
+            <CoCommunication v-else-if="activeTab === 'co-communication'" />
+            <AssingAo v-else-if="activeTab === 'assign-ao'" />
+            <AssignCo v-else-if="activeTab === 'assign-co'" />
+          </div>
+        </Transition>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-/* Optional: Hide the default scrollbar for a cleaner look */
 .custom-scrollbar::-webkit-scrollbar {
   display: none;
 }
 .custom-scrollbar {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
