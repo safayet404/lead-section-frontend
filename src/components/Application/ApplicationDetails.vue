@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick } from 'vue'
+import { ref, nextTick, onMounted } from 'vue'
 import StudentCourseDetails from './Tabs/StudentCourseDetails.vue'
 import UniversityDetails from './Tabs/UniversityDetails.vue'
 import UploadDownload from './Tabs/UploadDownload.vue'
@@ -10,6 +10,7 @@ import AoCommunication from './Tabs/AoCommunication.vue'
 import CoCommunication from './Tabs/CoCommunication.vue'
 import AssingAo from './Tabs/AssingAo.vue'
 import AssignCo from './Tabs/AssignCo.vue'
+import api from '@/lib/api'
 
 const props = defineProps({
   show: {
@@ -23,7 +24,25 @@ const props = defineProps({
 
 const activeTab = ref('student/course')
 const tabContainer = ref(null)
-console.log('application id', props.applicationId)
+const singleData = ref([])
+const loading = ref(false)
+
+const fetchApplicationDetails = async () => {
+  loading.value = true
+  try {
+    const res = await api.get(`single-application/${props.applicationId}`)
+    singleData.value = res.data
+    console.log('res', res.data)
+  } catch (error) {
+    console.log(error)
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(() => {
+  fetchApplicationDetails()
+})
 
 const tab = [
   { name: 'student/course', label: 'Student/Course Details' },
@@ -56,7 +75,7 @@ const scrollTabs = (direction) => {
     v-if="show"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center z-50 bg-black/50"
   >
-    <div class="bg-white rounded-xl shadow-lg w-11/12 h-11/12">
+    <div class="bg-white rounded-xl shadow-lg w-11/12 h-11/12 flex flex-col">
       <div class="flex justify-between p-4 relative bg-[#7367F0] rounded-t-lg">
         <h1 class="text-lg text-white">Application Details</h1>
         <button class="absolute top-2 right-5 text-2xl text-white" @click="$emit('close')">
@@ -64,49 +83,51 @@ const scrollTabs = (direction) => {
         </button>
       </div>
 
-      <div class="border border-gray-100 rounded-2xl shadow-2xl p-4 w-11/12 h-auto mx-auto mt-5">
-        <div class="flex border-b border-gray-200 items-center gap-2">
-          <button @click="scrollTabs('left')" class="p-2 text-gray-500 hover:text-gray-900">
-            &lt;
-          </button>
+      <div class="flex-grow max-h-full overflow-y-auto">
+        <div class="border border-gray-100 rounded-2xl shadow-2xl p-4 w-11/12 h-auto mx-auto mt-5">
+          <div class="flex border-b border-gray-200 items-center gap-2">
+            <button @click="scrollTabs('left')" class="p-2 text-gray-500 hover:text-gray-900">
+              &lt;
+            </button>
 
-          <div
-            ref="tabContainer"
-            class="flex overflow-x-auto overflow-y-hidden gap-4 custom-scrollbar"
-          >
-            <p
-              v-for="t in tab"
-              :key="t.name"
-              @click="activeTab = t.name"
-              :class="{
-                'whitespace-nowrap cursor-pointer px-4 py-2 transition-colors -mb-px': true,
-                'text-[#7367F0] border-b-2 border-[#7367F0]': activeTab === t.name,
-                'text-gray-700 hover:bg-gray-200': activeTab !== t.name,
-              }"
-            >
-              {{ t.label }}
-            </p>
+            <div ref="tabContainer" class="flex overflow-x-auto gap-4 custom-scrollbar">
+              <p
+                v-for="t in tab"
+                :key="t.name"
+                @click="activeTab = t.name"
+                :class="{
+                  'whitespace-nowrap font-medium cursor-pointer px-4 py-2 transition-colors -mb-px': true,
+                  'text-[#7367F0] border-b-2 border-[#7367F0]': activeTab === t.name,
+                  'text-gray-700 hover:bg-gray-200': activeTab !== t.name,
+                }"
+              >
+                {{ t.label }}
+              </p>
+            </div>
+
+            <button @click="scrollTabs('right')" class="p-2 text-gray-500 hover:text-gray-900">
+              &gt;
+            </button>
           </div>
 
-          <button @click="scrollTabs('right')" class="p-2 text-gray-500 hover:text-gray-900">
-            &gt;
-          </button>
+          <Transition name="fade" mode="out-in">
+            <div :key="activeTab">
+              <StudentCourseDetails v-if="activeTab === 'student/course'" :data="singleData" />
+              <UniversityDetails v-else-if="activeTab === 'university'" :data="singleData" />
+              <UploadDownload v-else-if="activeTab === 'upload'" :data="singleData" />
+              <Status v-else-if="activeTab === 'status'" :data="singleData" />
+              <Comments v-else-if="activeTab === 'comments'" :data="singleData" />
+              <UniversityCommunication
+                v-else-if="activeTab === 'university-communication'"
+                :data="singleData"
+              />
+              <AoCommunication v-else-if="activeTab === 'ao-communication'" />
+              <CoCommunication v-else-if="activeTab === 'co-communication'" />
+              <AssingAo v-else-if="activeTab === 'assign-ao'" />
+              <AssignCo v-else-if="activeTab === 'assign-co'" />
+            </div>
+          </Transition>
         </div>
-
-        <Transition name="fade" mode="out-in">
-          <div :key="activeTab">
-            <StudentCourseDetails v-if="activeTab === 'student/course'" />
-            <UniversityDetails v-else-if="activeTab === 'university'" />
-            <UploadDownload v-else-if="activeTab === 'upload'" />
-            <Status v-else-if="activeTab === 'status'" />
-            <Comments v-else-if="activeTab === 'comments'" />
-            <UniversityCommunication v-else-if="activeTab === 'university-communication'" />
-            <AoCommunication v-else-if="activeTab === 'ao-communication'" />
-            <CoCommunication v-else-if="activeTab === 'co-communication'" />
-            <AssingAo v-else-if="activeTab === 'assign-ao'" />
-            <AssignCo v-else-if="activeTab === 'assign-co'" />
-          </div>
-        </Transition>
       </div>
     </div>
   </div>
