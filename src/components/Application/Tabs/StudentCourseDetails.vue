@@ -22,36 +22,36 @@ const props = defineProps({
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student Passport No.</p>
-        <span class="text-gray-600">{{ props.data.student.passport_number }}</span>
+        <span class="text-gray-600">{{ props.data.student?.passport_number }}</span>
       </div>
 
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student Name</p>
         <span class="text-gray-600"
-          >{{ props.data.student.first_name }} {{ props.data.student.last_name }}</span
+          >{{ props.data.student?.first_name }} {{ props.data.student?.last_name }}</span
         >
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student Date of Birth</p>
-        <span class="text-gray-600">{{ props.data.student.date_of_birth }}</span>
+        <span class="text-gray-600">{{ props.data.student?.date_of_birth }}</span>
       </div>
 
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student E-Mail</p>
-        <span class="text-gray-600">{{ props.data.student.email }}</span>
+        <span class="text-gray-600">{{ props.data.student?.email }}</span>
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student Phone No.</p>
-        <span class="text-gray-600">{{ props.data.student.phone }}</span>
+        <span class="text-gray-600">{{ props.data.student?.phone }}</span>
       </div>
 
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student Address</p>
-        <span class="text-gray-600">{{ props.data.student.address }}</span>
+        <span class="text-gray-600">{{ props.data.student?.address }}</span>
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Student City & Country</p>
-        <span class="text-gray-600">{{ props.data.student.city }}</span>
+        <span class="text-gray-600">{{ props.data.student?.city }}</span>
       </div>
 
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
@@ -65,16 +65,16 @@ const props = defineProps({
 
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">University Name</p>
-        <span class="text-gray-600">{{ props.data.university.name }}</span>
+        <span class="text-gray-600">{{ props.data.university?.name }}</span>
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Intake Name</p>
-        <span class="text-gray-600">{{ props.data.intake.name }}</span>
+        <span class="text-gray-600">{{ props.data.intake?.name }}</span>
       </div>
 
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Course Name</p>
-        <span class="text-gray-600">{{ props.data.course.name }}</span>
+        <span class="text-gray-600">{{ props.data.course?.name }}</span>
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Compliance Officer</p>
@@ -93,8 +93,8 @@ const props = defineProps({
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">
         <p class="w-60 font-medium text-gray-700">Channel Partner</p>
         <span class="text-gray-600"
-          >{{ props.data.channel_partner.name }} <br />
-          {{ props.data.channel_partner.email }}</span
+          >{{ props.data.channel_partner?.name }} <br />
+          {{ props.data.channel_partner?.email }}</span
         >
       </div>
       <div class="flex items-center gap-20 border-b border-gray-300 py-3">

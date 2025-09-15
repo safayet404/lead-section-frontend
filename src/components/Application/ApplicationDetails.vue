@@ -26,11 +26,12 @@ const activeTab = ref('student/course')
 const tabContainer = ref(null)
 const singleData = ref([])
 const loading = ref(false)
+console.log('app', props.applicationId)
 
 const fetchApplicationDetails = async () => {
   loading.value = true
   try {
-    const res = await api.get(`single-application/${props.applicationId}`)
+    const res = await api.get(`single-application/${props?.applicationId}`)
     singleData.value = res.data
     console.log('res', res.data)
   } catch (error) {
