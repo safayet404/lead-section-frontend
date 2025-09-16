@@ -18,7 +18,7 @@ const props = defineProps({
     required: true,
   },
   applicationId: {
-    type: String,
+    type: Number,
   },
 })
 
