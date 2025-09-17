@@ -212,7 +212,7 @@ const handleNext = () => {
       <!-- Intake + Course Type -->
       <div class="flex justify-between gap-8 mt-10">
         <div class="w-full">
-          <label>Intake</label>
+          <label class="text-red-700">Intake</label>
           <select
             class="border w-full rounded p-1.5 border-gray-300 focus:outline-none mt-1 focus:border-purple-700"
             v-model="selectedIntake"

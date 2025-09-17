@@ -1,77 +1,118 @@
-<template>
-  <Listbox as="div" v-model="selectedUser">
-    <div class="relative mt-1">
-      <ListboxButton
-        class="relative w-full cursor-default rounded-md border border-gray-300 bg-white py-2 pl-3 pr-10 text-left shadow-sm focus:border-purple-700 focus:outline-none focus:ring-1 focus:ring-purple-700 sm:text-sm"
-      >
-        <span class="block truncate">{{
-          selectedUser
-            ? selectedUser.name + ' - ' + selectedUser.email
-            : 'Search and select an officer'
-        }}</span>
-        <span class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-          <svg
-            class="h-5 w-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3z"
-              clip-rule="evenodd"
-            />
-          </svg>
-        </span>
-      </ListboxButton>
-
-      <transition
-        leave-active-class="transition ease-in duration-100"
-        leave-from-class="opacity-100"
-        leave-to-class="opacity-0"
-      >
-        <ListboxOptions
-          class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
-        >
-          <ListboxOption
-            v-for="user in users"
-            :key="user.id"
-            :value="user"
-            as="template"
-            v-slot="{ active, selected }"
-          >
-            <li
-              :class="[
-                active ? 'bg-purple-600 text-white' : 'text-gray-900',
-                'relative cursor-default select-none py-2 pl-3 pr-9',
-              ]"
-            >
-              <span :class="[selected ? 'font-semibold' : 'font-normal', 'block truncate']"
-                >{{ user.name }} - {{ user.email }}</span
-              >
-            </li>
-          </ListboxOption>
-        </ListboxOptions>
-      </transition>
-    </div>
-  </Listbox>
-</template>
-
 <script setup>
-import { ref, onMounted } from 'vue'
-import { Listbox, ListboxButton, ListboxOptions, ListboxOption } from '@headlessui/vue'
 import api from '@/lib/api'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+const props = defineProps({
+  id: {
+    type: Number,
+  },
+})
 
+const search = ref('')
+const isOpen = ref(false)
+const dropdownRef = ref(null)
 const users = ref([])
-const selectedUser = ref(null)
+const selectedOfficer = ref(null)
 
-onMounted(async () => {
-  try {
-    const response = await api.get('/user-list')
-    users.value = response?.data?.list || []
-  } catch (error) {
-    console.error('Error fetching users:', error)
+const filteredOptions = computed(() => {
+  if (!search.value) return users.value
+  return users.value.filter(
+    (o) =>
+      o.name.toLowerCase().includes(search.value.toLowerCase()) ||
+      o.email.toLowerCase().includes(search.value.toLowerCase()),
+  )
+})
+
+const selectOption = (option) => {
+  search.value = option.name
+  selectedOfficer.value = option.id
+  isOpen.value = false
+}
+
+const onClickOutside = (event) => {
+  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+    isOpen.value = false
   }
+}
+
+const fetchUsers = async () => {
+  try {
+    users.value = (await api.get('/user-list')).data.list || []
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const assignOfficer = async () => {
+  try {
+    const payload = {
+      application_id: props.id,
+      user_id: selectedOfficer.value,
+    }
+
+    console.log(payload)
+
+    const response = await api.post('/assign-ao', payload)
+    if (response.data.status === 'success') {
+      selectedOfficer.value = null
+      search.value = ''
+      alert('assing successfull')
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('click', onClickOutside)
+  fetchUsers()
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClickOutside)
 })
 </script>
+
+<template>
+  <div class="p-4">
+    <h1 class="text-lg text-gray-700 font-medium">Application Officer Assignments</h1>
+
+    <div class="mt-5">
+      <label class="text-sm">Select Application Officer</label>
+
+      <div class="flex gap-4">
+        <div ref="dropdownRef" class="w-1/2 relative">
+          <input
+            type="text"
+            v-model="search"
+            @focus="isOpen = true"
+            placeholder="Search users..."
+            class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-[#7367F0]"
+          />
+
+          <ul
+            v-if="isOpen && filteredOptions.length > 0"
+            class="absolute z-10 w-full bg-white border border-gray-300 rounded mt-1 max-h-48 overflow-auto shadow-lg"
+          >
+            <li
+              v-for="(option, index) in filteredOptions"
+              :key="index"
+              @click="selectOption(option)"
+              class="px-3 py-2 hover:bg-purple-100 cursor-pointer"
+            >
+              {{ option.name }} - {{ option.email }}
+            </li>
+          </ul>
+        </div>
+        <div>
+          <button
+            @click="assignOfficer"
+            class="px-4 py-2 bg-[#7367F0] rounded text-white disabled:opacity-50 disabled:cursor-not-allowed"
+            :disabled="!selectedOfficer"
+          >
+            Assign Officer
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

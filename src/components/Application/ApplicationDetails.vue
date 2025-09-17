@@ -130,7 +130,7 @@ const scrollTabs = (direction) => {
               />
               <AoCommunication v-else-if="activeTab === 'ao-communication'" />
               <CoCommunication v-else-if="activeTab === 'co-communication'" />
-              <AssingAo v-else-if="activeTab === 'assign-ao'" />
+              <AssingAo v-else-if="activeTab === 'assign-ao'" :id="props.applicationId" />
               <AssignCo v-else-if="activeTab === 'assign-co'" />
             </div>
           </Transition>
