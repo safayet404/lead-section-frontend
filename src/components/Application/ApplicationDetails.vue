@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, nextTick, onMounted, watch } from 'vue'
 import StudentCourseDetails from './Tabs/StudentCourseDetails.vue'
 import UniversityDetails from './Tabs/UniversityDetails.vue'
 import UploadDownload from './Tabs/UploadDownload.vue'
@@ -41,9 +41,15 @@ const fetchApplicationDetails = async () => {
   }
 }
 
-onMounted(() => {
-  fetchApplicationDetails()
-})
+watch(
+  () => props.applicationId,
+  (newId) => {
+    if (props.show) {
+      fetchApplicationDetails(newId)
+    }
+  },
+  { immediate: true },
+)
 
 const tab = [
   { name: 'student/course', label: 'Student/Course Details' },

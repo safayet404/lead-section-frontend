@@ -129,7 +129,6 @@ function openModal(id) {
       :applicationId="applicationId"
       :title="modalTitle"
       :description="modalDescription"
-      :data="data"
       @close="isModalOpen = false"
     />
   </div>

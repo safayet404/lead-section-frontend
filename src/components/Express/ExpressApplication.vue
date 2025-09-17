@@ -60,12 +60,10 @@ const submitApplication = async () => {
   try {
     const formData = new FormData()
 
-    // append form fields
     Object.keys(form.value).forEach((key) => {
       formData.append(key, form.value[key])
     })
 
-    // append files
     selectedFiles.value.forEach((file) => {
       formData.append('files[]', file)
     })
