@@ -1,6 +1,6 @@
 <script setup>
 import api from '@/lib/api'
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 const props = defineProps({
   id: {
     type: Number,
@@ -43,26 +43,6 @@ const fetchUsers = async () => {
   }
 }
 
-const assignOfficer = async () => {
-  try {
-    const payload = {
-      application_id: props.id,
-      user_id: selectedOfficer.value,
-    }
-
-    console.log(payload)
-
-    const response = await api.post('/assign-ao', payload)
-    if (response.data.status === 'success') {
-      selectedOfficer.value = null
-      search.value = ''
-      alert('assing successfull')
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
 const assignList = async () => {
   try {
     assignOfficerList.value = (await api.get(`/single-assign/${props.id}`)).data || []
@@ -71,6 +51,28 @@ const assignList = async () => {
     console.log(error)
   }
 }
+
+watch(props.id, (val) => {
+  const assignOfficer = async () => {
+    try {
+      const payload = {
+        application_id: props.id,
+        user_id: selectedOfficer.value,
+      }
+
+      console.log(payload)
+
+      const response = await api.post('/assign-ao', payload)
+      if (response.data.status === 'success') {
+        selectedOfficer.value = null
+        search.value = ''
+        alert('assing successfull')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+})
 
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
@@ -141,9 +143,9 @@ onBeforeUnmount(() => {
             <td class="p-4 text-sm text-gray-700">{{ a.user.email }}</td>
             <td
               :class="{
-                'text-green-600': a.status === 'Approved',
+                'text-green-600  ': a.status === 'Approved',
                 'text-red-600': a.status === 'Rejected',
-                'text-yellow-600': a.status === 'Pending',
+                'text-yellow-600  ': a.status === 'Pending',
                 'text-gray-700':
                   a.status !== 'Approved' && a.status !== 'Rejected' && a.status !== 'Pending',
               }"

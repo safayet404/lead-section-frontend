@@ -20,7 +20,7 @@ const Header = [
   { text: 'Status', value: 'application_status.name' },
   { text: 'Student Details', value: 'student-details' },
   { text: 'University/Course Details', value: 'university-details' },
-  { text: 'Application Officer', value: 'ageing' },
+  { text: 'Application Officer', value: 'officer' },
   { text: 'Application Control Officer', value: 'ageing' },
   { text: 'Channel Partner/Created By', value: 'created-by' },
   { text: 'Date Added', value: 'created_at' },
@@ -83,6 +83,14 @@ function openModal(id) {
         <div>
           <p>{{ student.first_name }} {{ student.last_name }}</p>
           <p>{{ student.email }}</p>
+        </div>
+      </template>
+      <template #item-officer="{ assigned_officer }">
+        <div>
+          <p>
+            {{ assigned_officer?.name }} <br />
+            {{ assigned_officer?.email }}
+          </p>
         </div>
       </template>
       <template #item-university-details="{ university, course, intake }">
