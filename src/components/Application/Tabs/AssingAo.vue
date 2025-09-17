@@ -126,6 +126,34 @@ onBeforeUnmount(() => {
       </div>
     </div>
 
-    <div></div>
+    <div>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr class="border-b border-gray-200">
+            <th class="text-left text-sm font-medium text-gray-400 p-4 uppercase">Name</th>
+            <th class="text-left text-sm font-medium text-gray-400 p-4 uppercase">Email</th>
+            <th class="text-left text-sm font-medium text-gray-400 p-4 uppercase">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="a in assignOfficerList" :key="a.user.email" class="border-b border-gray-200">
+            <td class="p-4 text-sm text-gray-700">{{ a.user.name }}</td>
+            <td class="p-4 text-sm text-gray-700">{{ a.user.email }}</td>
+            <td
+              :class="{
+                'text-green-600': a.status === 'Approved',
+                'text-red-600': a.status === 'Rejected',
+                'text-yellow-600': a.status === 'Pending',
+                'text-gray-700':
+                  a.status !== 'Approved' && a.status !== 'Rejected' && a.status !== 'Pending',
+              }"
+              class="p-4 text-sm"
+            >
+              {{ a.status }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
