@@ -52,28 +52,6 @@ const assignList = async () => {
   }
 }
 
-watch(props.id, (val) => {
-  const assignOfficer = async () => {
-    try {
-      const payload = {
-        application_id: props.id,
-        user_id: selectedOfficer.value,
-      }
-
-      console.log(payload)
-
-      const response = await api.post('/assign-ao', payload)
-      if (response.data.status === 'success') {
-        selectedOfficer.value = null
-        search.value = ''
-        alert('assing successfull')
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-})
-
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
   fetchUsers()
