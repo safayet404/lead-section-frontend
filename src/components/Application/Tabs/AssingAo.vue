@@ -12,6 +12,7 @@ const isOpen = ref(false)
 const dropdownRef = ref(null)
 const users = ref([])
 const selectedOfficer = ref(null)
+const assignOfficerList = ref([])
 
 const filteredOptions = computed(() => {
   if (!search.value) return users.value
@@ -62,9 +63,19 @@ const assignOfficer = async () => {
   }
 }
 
+const assignList = async () => {
+  try {
+    assignOfficerList.value = (await api.get(`/single-assign/${props.id}`)).data || []
+    console.log(assignOfficerList.value)
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
   fetchUsers()
+  assignList()
 })
 
 onBeforeUnmount(() => {
